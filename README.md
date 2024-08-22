@@ -1,4 +1,4 @@
-> **Under development. The solution is not working properly yet.**
+> **Under development. The project is not working properly yet.**
 
 # SaleFlex.GATE
 
