@@ -73,6 +73,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'gate_project.wsgi.application'
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'pos_api_app.authentication.MerchantTokenAuthentication',
+    ],
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
