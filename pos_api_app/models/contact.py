@@ -22,10 +22,10 @@ class Contact(models.Model):
     fax_number = models.CharField(max_length=20, null=True, blank=True)
 
     # Foreign key to the Position model to indicate the person's role within the company
-    position = models.ForeignKey('Position', on_delete=models.SET_NULL, null=True, blank=True)
+    position = models.ForeignKey('ContactPosition', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Foreign key to the Authority model to indicate the person's responsibility or authority level
-    authority = models.ForeignKey('Authority', on_delete=models.SET_NULL, null=True, blank=True)
+    authority = models.ForeignKey('ContactAuthority', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Address fields: Street, BlockNo, District (optional)
     street = models.CharField(max_length=150, null=True, blank=True)
