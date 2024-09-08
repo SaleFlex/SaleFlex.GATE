@@ -38,6 +38,15 @@ class Merchant(models.Model):
     # Postal code of the merchant's address
     postal_code = models.CharField(max_length=20, null=True, blank=True)
 
+    # Foreign key to the MerchantBusinessOperationType model to define how the merchant operates (e.g., Wholesaler, Retailer)
+    operation_type = models.ForeignKey('MerchantBusinessOperationType', on_delete=models.SET_NULL, null=True, blank=True)
+
+    # Foreign key to the MerchantCompanyType model to define the type of company
+    company_type = models.ForeignKey('MerchantCompanyType', on_delete=models.SET_NULL, null=True, blank=True)
+
+    # Foreign key to the MerchantActivitySector model to define the business sector the merchant operates in
+    activity_sector = models.ForeignKey('MerchantActivitySector', on_delete=models.SET_NULL, null=True, blank=True)
+
     # Foreign key to the Contact model, to link one or more contact persons associated with the merchant
     contacts = models.ManyToManyField('Contact', related_name='merchants')
 
