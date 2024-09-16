@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-class LabelValue(models.Model):
+class PosLabelValue(models.Model):
     """
     Represents key-value pairs that display messages on POS device screens.
     Each message is localized using the CultureInfo field.
