@@ -24,6 +24,9 @@ class PosLabelValue(models.Model):
     # Foreign key to Merchant, optional, allows sending the message to all stores and POS devices under the merchant
     merchant = models.ForeignKey('Merchant', on_delete=models.SET_NULL, null=True, blank=True, related_name='label_values')
 
+    # Indicates if the pos label value has been marked as deleted (soft delete)
+    is_deleted = models.BooleanField(default=False, null=True)
+
     # User information: who created/updated the message
     created_by = models.ForeignKey(User, related_name='label_value_created', on_delete=models.SET_NULL, null=True, blank=True)
     updated_by = models.ForeignKey(User, related_name='label_value_updated', on_delete=models.SET_NULL, null=True, blank=True)

@@ -24,10 +24,15 @@ class Cashier(models.Model):
     # Indicates if the cashier is active or inactive
     is_active = models.BooleanField(default=True)
 
-    # Automatically set when the cashier record is created
-    created_at = models.DateTimeField(auto_now_add=True)
+    # Indicates if the cashier has been marked as deleted (soft delete)
+    is_deleted = models.BooleanField(default=False, null=True)
 
-    # Automatically set when the cashier record is updated
+    # User information: who created/updated the message
+    created_by = models.ForeignKey(User, related_name='label_value_created', on_delete=models.SET_NULL, null=True, blank=True)
+    updated_by = models.ForeignKey(User, related_name='label_value_updated', on_delete=models.SET_NULL, null=True, blank=True)
+
+    # Timestamps for record creation and last update
+    created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:

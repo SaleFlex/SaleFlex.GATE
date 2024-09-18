@@ -71,6 +71,9 @@ class PointOfSale(models.Model):
     # Indicates if the POS device is active or deactivated
     is_active = models.BooleanField(default=True)
 
+    # Indicates if the pos has been marked as deleted (soft delete)
+    is_deleted = models.BooleanField(default=False, null=True)
+
     # Foreign key to the User model, represents the user who created this POS record
     created_by = models.ForeignKey(User, related_name='pos_created', on_delete=models.SET_NULL, null=True, blank=True)
 

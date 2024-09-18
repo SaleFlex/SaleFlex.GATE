@@ -81,6 +81,9 @@ class PosFormControl(models.Model):
     store = models.ForeignKey('Store', on_delete=models.SET_NULL, null=True, blank=True, related_name='form_controls')
     merchant = models.ForeignKey('Merchant', on_delete=models.SET_NULL, null=True, blank=True, related_name='form_controls')
 
+    # Indicates if the pos form control has been marked as deleted (soft delete)
+    is_deleted = models.BooleanField(default=False, null=True)
+
     # User information: who created/updated the message
     created_by = models.ForeignKey(User, related_name='label_value_created', on_delete=models.SET_NULL, null=True, blank=True)
     updated_by = models.ForeignKey(User, related_name='label_value_updated', on_delete=models.SET_NULL, null=True, blank=True)

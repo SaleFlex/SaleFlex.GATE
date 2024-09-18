@@ -39,6 +39,9 @@ class Store(models.Model):
     # Indicates if the store is active or closed
     is_active = models.BooleanField(default=True)
 
+    # Indicates if the store has been marked as deleted (soft delete)
+    is_deleted = models.BooleanField(default=False, null=True)
+
     # Foreign key to the Contact model, to link one or more contact persons associated with the store
     contacts = models.ManyToManyField('Contact', related_name='merchants')
 

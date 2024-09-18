@@ -6,6 +6,9 @@ class ContactPosition(models.Model):
     # Position or role within a company, e.g., "Manager", "Sales Representative"
     name = models.CharField(max_length=100, unique=True)
 
+    # Indicates if the position has been marked as deleted (soft delete)
+    is_deleted = models.BooleanField(default=False, null=True)
+
     # Foreign key to the User model, represents the user who created this contact record
     created_by = models.ForeignKey(User, related_name='contact_created', on_delete=models.SET_NULL, null=True, blank=True)
 

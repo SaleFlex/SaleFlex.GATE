@@ -7,6 +7,9 @@ class MerchantActivitySector(models.Model):
     name = models.CharField(max_length=200, unique=True)
     description = models.TextField(null=True, blank=True)
 
+    # Indicates if the position activity has been marked as deleted (soft delete)
+    is_deleted = models.BooleanField(default=False, null=True)
+
     # Foreign key to the User model, represents the user who created this country record
     created_by = models.ForeignKey(User, related_name='country_created', on_delete=models.SET_NULL, null=True, blank=True)
 

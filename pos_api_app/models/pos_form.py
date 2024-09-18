@@ -63,6 +63,9 @@ class PosForm(models.Model):
     # Foreign key to Merchant, optional, allows the form to be sent to all stores and POS devices under the merchant
     merchant = models.ForeignKey('Merchant', on_delete=models.SET_NULL, null=True, blank=True, related_name='forms')
 
+    # Indicates if the pos form has been marked as deleted (soft delete)
+    is_deleted = models.BooleanField(default=False, null=True)
+
     # User information: who created/updated the message
     created_by = models.ForeignKey(User, related_name='label_value_created', on_delete=models.SET_NULL, null=True, blank=True)
     updated_by = models.ForeignKey(User, related_name='label_value_updated', on_delete=models.SET_NULL, null=True, blank=True)

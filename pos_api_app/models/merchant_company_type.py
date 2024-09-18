@@ -12,6 +12,9 @@ class MerchantCompanyType(models.Model):
     # Optional description to explain the company type
     description = models.TextField(null=True, blank=True)
 
+    # Indicates if the company type has been marked as deleted (soft delete)
+    is_deleted = models.BooleanField(default=False, null=True)
+
     # Foreign key to the User model, represents the user who created this country record
     created_by = models.ForeignKey(User, related_name='country_created', on_delete=models.SET_NULL, null=True, blank=True)
 

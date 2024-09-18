@@ -6,6 +6,9 @@ class ContactAuthority(models.Model):
     # Authority or responsibility level, e.g., "Decision Maker", "Point of Contact"
     name = models.CharField(max_length=150, unique=True)
 
+    # Indicates if the authority has been marked as deleted (soft delete)
+    is_deleted = models.BooleanField(default=False, null=True)
+
     # Foreign key to the User model, represents the user who created this contact record
     created_by = models.ForeignKey(User, related_name='contact_created', on_delete=models.SET_NULL, null=True,
                                    blank=True)

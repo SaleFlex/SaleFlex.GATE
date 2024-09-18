@@ -20,6 +20,9 @@ class MerchantAPIToken(models.Model):
     # Indicates if the token is active or revoked
     is_active = models.BooleanField(default=True)
 
+    # Indicates if the token has been marked as deleted (soft delete)
+    is_deleted = models.BooleanField(default=False, null=True)
+
     # Foreign key to the User model, to track who created the token (optional)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='token_created')
 

@@ -9,16 +9,15 @@ class MerchantBusinessOperationType(models.Model):
     # Optional description of the business operation type
     description = models.TextField(null=True, blank=True)
 
-    # Foreign key to the User model, represents the user who created this country record
-    created_by = models.ForeignKey(User, related_name='country_created', on_delete=models.SET_NULL, null=True, blank=True)
+    # Indicates if the business operation type has been marked as deleted (soft delete)
+    is_deleted = models.BooleanField(default=False, null=True)
 
-    # Automatically set when the country record is created
+    # User information: who created/updated the message
+    created_by = models.ForeignKey(User, related_name='label_value_created', on_delete=models.SET_NULL, null=True, blank=True)
+    updated_by = models.ForeignKey(User, related_name='label_value_updated', on_delete=models.SET_NULL, null=True, blank=True)
+
+    # Timestamps for record creation and last update
     created_at = models.DateTimeField(auto_now_add=True)
-
-    # Foreign key to the User model, represents the user who last updated this country record
-    updated_by = models.ForeignKey(User, related_name='country_updated', on_delete=models.SET_NULL, null=True, blank=True)
-
-    # Automatically set when the country record is updated
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
