@@ -2,6 +2,13 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+# No: 1
+# Name: United States Dollars
+# RateOfCurrency: 220 means 2.20
+# CurrencyCode: 840
+# Sign: $
+# SignDirection: R
+# CurrencySymbol: USD
 class PosCurrency(models.Model):
     # Currency number (unique for each currency)
     no = models.IntegerField()
@@ -10,7 +17,7 @@ class PosCurrency(models.Model):
     name = models.CharField(max_length=255)
 
     # Currency rate (e.g., exchange rate)
-    rate_of_currency = models.DecimalField(max_digits=10, decimal_places=2)
+    rate_of_currency = models.IntegerField()
 
     # ISO currency code (e.g., 840 for USD)
     currency_code = models.IntegerField()
