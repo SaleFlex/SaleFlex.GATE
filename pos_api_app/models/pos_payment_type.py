@@ -7,7 +7,7 @@ class PosPaymentType(models.Model):
     type_no = models.IntegerField()
 
     # Name of the payment type (required)
-    type_name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
 
     # Culture information (e.g., en-US, fr-FR) (required)
     culture_info = models.CharField(max_length=50)
