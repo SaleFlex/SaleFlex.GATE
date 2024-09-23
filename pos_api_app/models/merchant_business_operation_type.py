@@ -13,8 +13,8 @@ class MerchantBusinessOperationType(models.Model):
     is_deleted = models.BooleanField(default=False, null=True)
 
     # User information: who created/updated the message
-    created_by = models.ForeignKey(User, related_name='label_value_created', on_delete=models.SET_NULL, null=True, blank=True)
-    updated_by = models.ForeignKey(User, related_name='label_value_updated', on_delete=models.SET_NULL, null=True, blank=True)
+    created_by = models.ForeignKey(User, related_name='merchant_business_operation_type_created', on_delete=models.SET_NULL, null=True, blank=True)
+    updated_by = models.ForeignKey(User, related_name='merchant_business_operation_type_updated', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Timestamps for record creation and last update
     created_at = models.DateTimeField(auto_now_add=True)

@@ -89,8 +89,8 @@ class Customer(models.Model):
     delete_description = models.CharField(max_length=255, null=True, blank=True)
 
     # User information: who created/updated the message
-    created_by = models.ForeignKey(User, related_name='label_value_created', on_delete=models.SET_NULL, null=True, blank=True)
-    updated_by = models.ForeignKey(User, related_name='label_value_updated', on_delete=models.SET_NULL, null=True, blank=True)
+    created_by = models.ForeignKey(User, related_name='customer_created', on_delete=models.SET_NULL, null=True, blank=True)
+    updated_by = models.ForeignKey(User, related_name='customer_updated', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Timestamps for record creation and last update
     created_at = models.DateTimeField(auto_now_add=True)
