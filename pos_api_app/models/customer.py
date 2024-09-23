@@ -35,7 +35,7 @@ class Customer(models.Model):
     bonus = models.IntegerField(default=0)
 
     # Preferred currency for transactions, stored as an ISO numeric currency code (e.g., 840 for USD)
-    preferred_currency_code = models.IntegerField()
+    preferred_currency_code = models.IntegerField(default=840)
 
     # National identity number, optional field
     national_identity_number = models.CharField(max_length=50, blank=True, null=True)
