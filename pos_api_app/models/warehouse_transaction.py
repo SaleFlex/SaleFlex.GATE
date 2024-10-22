@@ -3,9 +3,6 @@ from django.db import models
 
 
 class WarehouseTransaction(models.Model):
-    # Transaction Id (Automatically generated in Django)
-    id = models.AutoField(primary_key=True)
-
     # Warehouse Id (ForeignKey to a Warehouse model)
     warehouse = models.ForeignKey('Warehouse', on_delete=models.CASCADE, related_name='transactions')
 
