@@ -23,8 +23,8 @@ class WarehouseProduct(models.Model):
     last_updated = models.DateTimeField(default=timezone.now)
 
     # User information: who created/updated the message
-    created_by = models.ForeignKey(User, related_name='tag_created', on_delete=models.SET_NULL, null=True, blank=True)
-    updated_by = models.ForeignKey(User, related_name='tag_updated', on_delete=models.SET_NULL, null=True, blank=True)
+    created_by = models.ForeignKey(User, related_name='warehouse_product_created', on_delete=models.SET_NULL, null=True, blank=True)
+    updated_by = models.ForeignKey(User, related_name='warehouse_product_updated', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Timestamps for record creation and last update
     created_at = models.DateTimeField(auto_now_add=True)

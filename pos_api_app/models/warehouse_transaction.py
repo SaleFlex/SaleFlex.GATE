@@ -27,8 +27,8 @@ class WarehouseTransaction(models.Model):
     description = models.TextField(blank=True, null=True)
 
     # User information: who created/updated the message
-    created_by = models.ForeignKey(User, related_name='tag_created', on_delete=models.SET_NULL, null=True, blank=True)
-    updated_by = models.ForeignKey(User, related_name='tag_updated', on_delete=models.SET_NULL, null=True, blank=True)
+    created_by = models.ForeignKey(User, related_name='warehouse_transaction_created', on_delete=models.SET_NULL, null=True, blank=True)
+    updated_by = models.ForeignKey(User, related_name='warehouse_transaction_updated', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Timestamps for record creation and last update
     created_at = models.DateTimeField(auto_now_add=True)
