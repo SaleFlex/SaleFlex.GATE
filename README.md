@@ -5,7 +5,7 @@
 **SaleFlex.GATE** is a centralized management system designed to work with multiple instances of the **SaleFlex.POS** application. It acts as a control hub for businesses operating across multiple locations, providing comprehensive support for inventory and sales tracking. SaleFlex.GATE also offers seamless integration with ERP systems, ensuring that data flow between your POS systems and enterprise software is efficient and reliable. This project leverages **Django** and **Django REST Framework** to deliver robust and efficient backend services.
 
 ### Important Note
-SaleFlex.GATE is designed to work in conjunction with the [SaleFlex.POS](https://github.com/SaleFlex/SaleFlex.POS) project, which serves as the retail sales interface. Together, these systems provide a comprehensive solution for managing retail operations.
+SaleFlex.GATE is designed to work in conjunction with the [SaleFlex.PyPOS](https://github.com/SaleFlex/SaleFlex.PyPOS) and [SaleFlex.POS](https://github.com/SaleFlex/SaleFlex.POS) project, which serves as the retail sales interface. Together, these systems provide a comprehensive solution for managing retail operations.
 
 # Project Roadmap
 - [ ] Initial Database Structure
