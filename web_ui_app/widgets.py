@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 from django.forms.utils import flatatt
-from django.forms.widgets import EmailInput, PasswordInput, TextInput
+from django.forms.widgets import EmailInput, FileInput, PasswordInput, TextInput
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
@@ -52,3 +52,17 @@ class AtomicPasswordInput(_AtomicInputMixin, PasswordInput):
 
 class AtomicEmailInput(_AtomicInputMixin, EmailInput):
     pass
+
+
+class AtomicFileInput(FileInput):
+    """
+    Same idea as _AtomicInputMixin: one format_html call so file inputs do not
+    split into visible attribute text in some browsers / Django template setups.
+    Never emit a value= attribute on file inputs.
+    """
+
+    def render(self, name, value, attrs=None, renderer=None):
+        context = self.get_context(name, value, attrs)
+        w = context["widget"]
+        attrs_dict = {**w["attrs"], "type": w["type"], "name": w["name"]}
+        return format_html("<input{}>", mark_safe(flatatt(attrs_dict)))

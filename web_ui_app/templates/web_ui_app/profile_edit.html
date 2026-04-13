@@ -1,0 +1,43 @@
+{% extends "web_ui_app/base.html" %}
+
+{% block title %}Profile — SaleFlex.GATE{% endblock %}
+
+{% block content %}
+<div class="card card-narrow">
+    <h1>Profile</h1>
+    <p class="lead lead-tight">Update your name, email, and optional profile picture. Use <strong>Settings → Change password</strong> in the account menu to change your password.</p>
+    <form method="post" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for field in user_form %}
+            {% if field.is_hidden %}
+                {{ field }}
+            {% else %}
+            <div class="form-row">
+                <label for="{{ field.id_for_label }}">{{ field.label }}{{ user_form.label_suffix }}</label>
+                {{ field.as_widget }}
+                {% if field.help_text %}<div class="helptext"{% if field.auto_id %} id="{{ field.auto_id }}_helptext"{% endif %}>{{ field.help_text|safe }}</div>{% endif %}
+                {{ field.errors }}
+            </div>
+            {% endif %}
+        {% endfor %}
+        {% for field in avatar_form %}
+            {% if field.is_hidden %}
+                {{ field }}
+            {% else %}
+            <div class="form-row">
+                <label for="{{ field.id_for_label }}">{{ field.label }}{{ avatar_form.label_suffix }}</label>
+                {% if avatar_form.instance.avatar %}
+                <div class="profile-avatar-preview">
+                    <img src="{{ avatar_form.instance.avatar.url }}" alt="" width="72" height="72">
+                </div>
+                {% endif %}
+                {{ field.as_widget }}
+                {% if field.help_text %}<div class="helptext"{% if field.auto_id %} id="{{ field.auto_id }}_helptext"{% endif %}>{{ field.help_text|safe }}</div>{% endif %}
+                {{ field.errors }}
+            </div>
+            {% endif %}
+        {% endfor %}
+        <button type="submit" class="btn btn-primary btn-block">Save profile</button>
+    </form>
+</div>
+{% endblock %}

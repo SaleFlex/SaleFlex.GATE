@@ -14,7 +14,7 @@ It is the primary integration point for **[SaleFlex.PyPOS](https://github.com/Sa
 - **Django REST Framework** — Versioned JSON APIs for devices (PyPOS, KITCHEN) and mobile clients; merchant token authentication (see `pos_api_app.authentication`).
 - **POS-aligned domain models** — Merchant, store, POS, closure, warehouse, customer, and related reference entities under `pos_api_app` (evolving toward full sync with PyPOS payloads).
 - **Django Admin** — Built-in admin site for early data management (`/admin/`).
-- **Web UI & public portal** — `web_ui_app` provides a landing page (guests), session login/register/logout/password change, and a signed-in dashboard stub; ERP-style screens will extend this.
+- **Web UI & public portal** — `web_ui_app` provides a landing page (guests), session login/register/logout/password change, a signed-in dashboard stub, an account menu (avatar with default placeholder, profile edit, settings submenu with change password), and optional profile picture uploads; ERP-style screens will extend this.
 - **Integration gateway** — Designed to front ERP, loyalty, campaign, and payment adapters so edge apps stay thin.
 - **Reporting & back office (roadmap)** — Aggregated sales, stock, and KPIs via web UI and APIs.
 - **Open source** — Extend and deploy for your own infrastructure.
@@ -85,15 +85,17 @@ SaleFlex.GATE/
 │
 ├── web_ui_app/               # Public landing + session auth; base for future ERP-style UI
 │   ├── forms.py              # Registration (UserCreationForm extension)
+│   ├── context_processors.py # gate_user_profile for header avatar
 │   ├── urls.py               # /, /dashboard/, /accounts/...
 │   ├── static/web_ui_app/    # Portal CSS, favicon, and optional JS (Django staticfiles)
 │   │   ├── css/base.css
 │   │   ├── icons/favicon.svg
-│   │   └── js/               # Page scripts (add files as needed)
+│   │   ├── icons/avatar-default.svg
+│   │   └── js/               # e.g. user-menu.js for account dropdown
 │   ├── templates/            # Landing, auth, registration templates
 │   ├── admin.py
 │   ├── apps.py
-│   ├── models.py
+│   ├── models.py             # UserProfile (optional avatar file)
 │   ├── views.py
 │   └── tests.py
 │
@@ -117,6 +119,8 @@ Pinned in `requirements.txt` (example versions in-repo):
 
 - `django`
 - `djangorestframework`
+
+Uploaded profile pictures are stored under `MEDIA_ROOT` (project `media/` by default, gitignored). Install **Pillow** if you switch the profile field to `ImageField` or need server-side image processing; the stock portal uses `FileField` with extension validation so a basic install works without it.
 
 ### Database
 

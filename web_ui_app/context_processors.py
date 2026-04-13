@@ -20,30 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from django.conf import settings
-from django.core.validators import FileExtensionValidator
-from django.db import models
+from .models import UserProfile
 
 
-class UserProfile(models.Model):
-    """Optional web UI data for Django auth users (avatar, future fields)."""
-
-    user = models.OneToOneField(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name="web_profile",
-    )
-    avatar = models.FileField(
-        upload_to="web_ui_app/avatars/%Y/%m/",
-        blank=True,
-        null=True,
-        validators=[
-            FileExtensionValidator(
-                allowed_extensions=("jpg", "jpeg", "png", "gif", "webp"),
-            )
-        ],
-        help_text="Optional profile picture for the portal header (JPG, PNG, GIF, or WebP).",
-    )
-
-    def __str__(self) -> str:
-        return f"Profile for {self.user_id}"
+def user_profile(request):
+    if not request.user.is_authenticated:
+        return {}
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+    return {"gate_user_profile": profile}

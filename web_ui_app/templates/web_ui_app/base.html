@@ -16,13 +16,48 @@
             <a class="brand" href="{% url 'landing' %}">SaleFlex.GATE</a>
             <nav class="nav-actions">
                 {% if user.is_authenticated %}
-                    <span class="user-label">{{ user.username }}</span>
-                    <a class="btn" href="{% url 'dashboard' %}">Dashboard</a>
-                    <a class="btn" href="{% url 'password_change' %}">Change password</a>
-                    <form action="{% url 'logout' %}" method="post" class="form-inline">
-                        {% csrf_token %}
-                        <button type="submit" class="btn">Log out</button>
-                    </form>
+                    <a class="btn btn-nav" href="{% url 'dashboard' %}">Dashboard</a>
+                    <div class="user-menu" data-user-menu>
+                        <button
+                            type="button"
+                            class="user-menu__trigger"
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-controls="user-menu-panel"
+                            title="Account menu"
+                        >
+                            <span class="user-menu__avatar-wrap">
+                                {% if gate_user_profile.avatar %}
+                                    <img class="user-menu__avatar" src="{{ gate_user_profile.avatar.url }}" alt="" width="36" height="36">
+                                {% else %}
+                                    <img class="user-menu__avatar" src="{% static 'web_ui_app/icons/avatar-default.svg' %}" alt="" width="36" height="36">
+                                {% endif %}
+                            </span>
+                            <span class="user-menu__chev" aria-hidden="true">▾</span>
+                        </button>
+                        <div class="user-menu__panel" id="user-menu-panel" role="menu" hidden>
+                            <span class="user-menu__username" role="presentation">{{ user.username }}</span>
+                            <a class="user-menu__item" role="menuitem" href="{% url 'profile_edit' %}">Profile</a>
+                            <div class="user-menu__sub-wrap">
+                                <button
+                                    type="button"
+                                    class="user-menu__sub-toggle"
+                                    aria-expanded="false"
+                                    aria-controls="user-menu-settings-sub"
+                                >
+                                    Settings
+                                    <span class="user-menu__chev-sub" aria-hidden="true">▾</span>
+                                </button>
+                                <div class="user-menu__sub" id="user-menu-settings-sub" role="group" hidden>
+                                    <a class="user-menu__item user-menu__item--nested" role="menuitem" href="{% url 'password_change' %}">Change password</a>
+                                </div>
+                            </div>
+                            <form action="{% url 'logout' %}" method="post" class="user-menu__logout">
+                                {% csrf_token %}
+                                <button type="submit" class="user-menu__item user-menu__item--button" role="menuitem">Log out</button>
+                            </form>
+                        </div>
+                    </div>
                 {% else %}
                     <a class="btn" href="{% url 'login' %}">Log in</a>
                     <a class="btn btn-primary" href="{% url 'register' %}">Create account</a>
@@ -46,5 +81,8 @@
             Central hub for SaleFlex — POS, kitchen, mobile, and integrations. See repository README for architecture.
         </footer>
     </div>
+    {% if user.is_authenticated %}
+    <script src="{% static 'web_ui_app/js/user-menu.js' %}" defer></script>
+    {% endif %}
 </body>
 </html>

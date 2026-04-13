@@ -28,7 +28,13 @@ from django.contrib.auth.forms import (
 )
 from django.contrib.auth.models import User
 
-from .widgets import AtomicEmailInput, AtomicPasswordInput, AtomicTextInput
+from .models import UserProfile
+from .widgets import (
+    AtomicEmailInput,
+    AtomicFileInput,
+    AtomicPasswordInput,
+    AtomicTextInput,
+)
 
 
 class GateAuthenticationForm(AuthenticationForm):
@@ -79,3 +85,34 @@ class GateUserCreationForm(UserCreationForm):
                     attrs={**w.attrs},
                     render_value=w.render_value,
                 )
+
+
+class GateUserAccountForm(forms.ModelForm):
+    """Update signed-in user fields (password is changed elsewhere)."""
+
+    class Meta:
+        model = User
+        fields = ("first_name", "last_name", "email")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for name in ("first_name", "last_name"):
+            if name in self.fields:
+                f = self.fields[name]
+                f.widget = AtomicTextInput(attrs={**f.widget.attrs})
+        if "email" in self.fields:
+            f = self.fields["email"]
+            f.widget = AtomicEmailInput(attrs={**f.widget.attrs})
+
+
+class GateUserAvatarForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ("avatar",)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        f = self.fields["avatar"]
+        f.required = False
+        f.label = "Profile picture"
+        f.widget = AtomicFileInput(attrs={**f.widget.attrs})

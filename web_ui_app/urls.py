@@ -29,6 +29,7 @@ from .forms import GateAuthenticationForm, GatePasswordChangeForm
 urlpatterns = [
     path("", views.landing, name="landing"),
     path("dashboard/", views.dashboard, name="dashboard"),
+    path("accounts/profile/", views.profile_edit, name="profile_edit"),
     path("accounts/register/", views.register, name="register"),
     path(
         "accounts/login/",

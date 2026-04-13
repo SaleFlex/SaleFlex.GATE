@@ -20,11 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
-from .forms import GateUserCreationForm
+from .forms import GateUserAccountForm, GateUserAvatarForm, GateUserCreationForm
+from .models import UserProfile
 
 
 def landing(request):
@@ -36,6 +38,31 @@ def landing(request):
 @login_required
 def dashboard(request):
     return render(request, "web_ui_app/dashboard.html")
+
+
+@login_required
+def profile_edit(request):
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+    if request.method == "POST":
+        user_form = GateUserAccountForm(request.POST, instance=request.user)
+        avatar_form = GateUserAvatarForm(
+            request.POST,
+            request.FILES,
+            instance=profile,
+        )
+        if user_form.is_valid() and avatar_form.is_valid():
+            user_form.save()
+            avatar_form.save()
+            messages.success(request, "Your profile was updated.")
+            return redirect("profile_edit")
+    else:
+        user_form = GateUserAccountForm(instance=request.user)
+        avatar_form = GateUserAvatarForm(instance=profile)
+    return render(
+        request,
+        "web_ui_app/profile_edit.html",
+        {"user_form": user_form, "avatar_form": avatar_form},
+    )
 
 
 def register(request):
