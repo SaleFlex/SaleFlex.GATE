@@ -1,0 +1,25 @@
+{% extends "web_ui_app/base.html" %}
+
+{% block title %}Create account — SaleFlex.GATE{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 420px; margin: 0 auto;">
+    <h1>Create account</h1>
+    <p class="lead">Register a hub user. Company membership and invitations are described in the project docs.</p>
+    <form method="post" action="">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="form-row">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.help_text %}<div class="helptext">{{ field.help_text }}</div>{% endif %}
+                {{ field.errors }}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">Register</button>
+    </form>
+    <p style="margin-top: 1.25rem; font-size: 0.9rem; color: var(--muted);">
+        Already have an account? <a href="{% url 'login' %}">Log in</a>
+    </p>
+</div>
+{% endblock %}

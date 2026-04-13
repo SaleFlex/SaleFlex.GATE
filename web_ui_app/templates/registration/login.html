@@ -1,0 +1,28 @@
+{% extends "web_ui_app/base.html" %}
+
+{% block title %}Log in — SaleFlex.GATE{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 420px; margin: 0 auto;">
+    <h1>Log in</h1>
+    <p class="lead">Sign in with your username and password.</p>
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+            <ul class="errorlist">{{ form.non_field_errors }}</ul>
+        {% endif %}
+        {% for field in form %}
+            <div class="form-row">
+                {{ field.label_tag }}
+                {{ field }}
+                {{ field.errors }}
+            </div>
+        {% endfor %}
+        {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Log in</button>
+    </form>
+    <p style="margin-top: 1.25rem; font-size: 0.9rem; color: var(--muted);">
+        No account? <a href="{% url 'register' %}">Create one</a>
+    </p>
+</div>
+{% endblock %}

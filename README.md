@@ -14,7 +14,7 @@ It is the primary integration point for **[SaleFlex.PyPOS](https://github.com/Sa
 - **Django REST Framework** — Versioned JSON APIs for devices (PyPOS, KITCHEN) and mobile clients; merchant token authentication (see `pos_api_app.authentication`).
 - **POS-aligned domain models** — Merchant, store, POS, closure, warehouse, customer, and related reference entities under `pos_api_app` (evolving toward full sync with PyPOS payloads).
 - **Django Admin** — Built-in admin site for early data management (`/admin/`).
-- **Web UI foundation** — `web_ui_app` package reserved for custom ERP-style screens (wire into `INSTALLED_APPS` when ready).
+- **Web UI & public portal** — `web_ui_app` provides a landing page (guests), session login/register/logout/password change, and a signed-in dashboard stub; ERP-style screens will extend this.
 - **Integration gateway** — Designed to front ERP, loyalty, campaign, and payment adapters so edge apps stay thin.
 - **Reporting & back office (roadmap)** — Aggregated sales, stock, and KPIs via web UI and APIs.
 - **Open source** — Extend and deploy for your own infrastructure.
@@ -36,7 +36,7 @@ GATE sits between **edge clients** (POS, kitchen, mobile) and **optional enterpr
 │                    SaleFlex.GATE (Django)                       │
 │  ┌──────────────┐  ┌──────────────┐  ┌────────────────────────┐ │
 │  │ Django Admin │  │ REST (DRF)   │  │ Web UI (web_ui_app)    │ │
-│  │ + sessions   │  │ + auth       │  │ (ERP-style, roadmap)   │ │
+│  │ + sessions   │  │ + auth       │  │ landing + session auth │ │
 │  └──────────────┘  └──────────────┘  └────────────────────────┘ │
 │                             │                                   │
 │  ┌──────────────────────────┴───────────────────────────────┐   │
@@ -82,7 +82,10 @@ SaleFlex.GATE/
 │   ├── apps.py
 │   └── tests.py
 │
-├── web_ui_app/               # Placeholder for custom web screens (not in INSTALLED_APPS until wired)
+├── web_ui_app/               # Public landing + session auth; base for future ERP-style UI
+│   ├── forms.py              # Registration (UserCreationForm extension)
+│   ├── urls.py               # /, /dashboard/, /accounts/...
+│   ├── templates/            # Landing, auth, registration templates
 │   ├── admin.py
 │   ├── apps.py
 │   ├── models.py
@@ -142,9 +145,10 @@ python manage.py createsuperuser   # optional — for Django Admin
 python manage.py runserver
 ```
 
+Open the **public site** (landing for guests): [http://127.0.0.1:8000/](http://127.0.0.1:8000/)  
 Open **Django Admin**: [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)
 
-> REST API routes are still being expanded; root `urls.py` currently exposes the admin site. Follow the [Development Roadmap](#development-roadmap) and `docs/` for the target API surface.
+> REST API routes are still being expanded. Follow the [Development Roadmap](#development-roadmap) and `docs/` for the target API surface. Browser routes are summarized in [docs/08-public-web-portal-landing-and-accounts.md](docs/08-public-web-portal-landing-and-accounts.md).
 
 ---
 
@@ -198,7 +202,7 @@ Open **Django Admin**: [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admi
 - **SECRET_KEY** — Replace the development key in `gate_project/settings.py` before any production deployment; use environment variables or a secrets manager.
 - **DEBUG** — Set `DEBUG = False` and configure `ALLOWED_HOSTS` in production.
 - **Database** — Point `DATABASES['default']` to PostgreSQL when moving beyond local SQLite.
-- **`web_ui_app`** — Add `'web_ui_app'` to `INSTALLED_APPS` and include its URLs when you start using custom views.
+- **`web_ui_app`** — Enabled in `INSTALLED_APPS` with URLs at the site root (`/`). Adjust `LOGIN_*` / `LOGOUT_REDIRECT_URL` in `settings.py` if you change paths.
 
 ---
 
@@ -286,6 +290,7 @@ Beyond REST consumers, GATE ships (or will ship) **Django-based web interfaces**
 | [docs/05-mobile-client-scenarios.md](docs/05-mobile-client-scenarios.md) | Management, stocktake, waiter apps. |
 | [docs/06-third-party-integrations.md](docs/06-third-party-integrations.md) | ERP, loyalty, campaign, payment. |
 | [docs/07-web-ui-erp-and-reporting.md](docs/07-web-ui-erp-and-reporting.md) | Django UI and reporting scope. |
+| [docs/08-public-web-portal-landing-and-accounts.md](docs/08-public-web-portal-landing-and-accounts.md) | Landing page and session account URLs (`web_ui_app`). |
 
 ---
 
@@ -313,7 +318,8 @@ Beyond REST consumers, GATE ships (or will ship) **Django-based web interfaces**
 ### Web & mobile consumers
 
 - [ ] Multi-store and multi-terminal management in web UI  
-- [ ] Register `web_ui_app` and build ERP-style screens incrementally  
+- [x] Register `web_ui_app` — landing, session register/login/logout/password change, dashboard stub  
+- [ ] ERP-style operational screens beyond the portal stub  
 - [ ] Mobile-oriented endpoints: management dashboards, stocktake sessions, waiter/order flows  
 
 ### Integrations & reporting

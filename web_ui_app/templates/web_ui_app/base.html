@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}SaleFlex.GATE{% endblock %}</title>
+    <style>
+        :root {
+            --bg: #0f1419;
+            --surface: #1a2332;
+            --border: #2d3a4d;
+            --text: #e8edf4;
+            --muted: #8b9cb3;
+            --accent: #3d8bfd;
+            --accent-hover: #5ba3ff;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, sans-serif;
+            background: linear-gradient(160deg, var(--bg) 0%, #152238 50%, #0d1829 100%);
+            color: var(--text);
+            line-height: 1.5;
+        }
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { color: var(--accent-hover); text-decoration: underline; }
+        .shell { max-width: 960px; margin: 0 auto; padding: 1.25rem 1.5rem; }
+        header.site {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+        header.site .brand {
+            font-weight: 700;
+            font-size: 1.125rem;
+            letter-spacing: -0.02em;
+            color: var(--text);
+            text-decoration: none;
+        }
+        header.site .brand:hover { text-decoration: none; color: var(--accent); }
+        .nav-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
+        .btn {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .btn:hover { border-color: var(--accent); color: var(--accent-hover); text-decoration: none; }
+        .btn-primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+        .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: #fff; }
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.75rem 2rem;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+        }
+        .messages { list-style: none; padding: 0; margin: 0 0 1rem; }
+        .messages li {
+            padding: 0.65rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            background: #2a3f5c;
+            border: 1px solid var(--border);
+        }
+        .messages li.error { background: #3d2a32; border-color: #6b3d4a; }
+        .messages li.success { background: #2a3d32; border-color: #3d6b4a; }
+        .form-row { margin-bottom: 1rem; }
+        .form-row label { display: block; margin-bottom: 0.35rem; color: var(--muted); font-size: 0.875rem; }
+        .form-row input {
+            width: 100%;
+            max-width: 100%;
+            padding: 0.6rem 0.75rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text);
+        }
+        .helptext, .form-row .helptext { font-size: 0.8rem; color: var(--muted); margin-top: 0.25rem; }
+        ul.errorlist { color: #f0a8b4; list-style: none; padding: 0; margin: 0.25rem 0 0; font-size: 0.85rem; }
+        h1 { font-size: 1.75rem; margin: 0 0 0.5rem; letter-spacing: -0.02em; }
+        h2 { font-size: 1.2rem; margin: 1.5rem 0 0.75rem; color: var(--muted); font-weight: 600; }
+        p.lead { font-size: 1.05rem; color: var(--muted); margin: 0 0 1.25rem; }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .feature {
+            padding: 1rem 1.15rem;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: rgba(15, 20, 25, 0.5);
+        }
+        .feature h3 { margin: 0 0 0.35rem; font-size: 1rem; }
+        .feature p { margin: 0; font-size: 0.875rem; color: var(--muted); }
+        footer.site { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--muted); }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <div class="shell">
+        <header class="site">
+            <a class="brand" href="{% url 'landing' %}">SaleFlex.GATE</a>
+            <nav class="nav-actions">
+                {% if user.is_authenticated %}
+                    <span class="muted" style="color: var(--muted); font-size: 0.9rem;">{{ user.username }}</span>
+                    <a class="btn" href="{% url 'dashboard' %}">Dashboard</a>
+                    <a class="btn" href="{% url 'password_change' %}">Change password</a>
+                    <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn">Log out</button>
+                    </form>
+                {% else %}
+                    <a class="btn" href="{% url 'login' %}">Log in</a>
+                    <a class="btn btn-primary" href="{% url 'register' %}">Create account</a>
+                {% endif %}
+            </nav>
+        </header>
+
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+
+        <footer class="site">
+            Central hub for SaleFlex — POS, kitchen, mobile, and integrations. See repository README for architecture.
+        </footer>
+    </div>
+</body>
+</html>

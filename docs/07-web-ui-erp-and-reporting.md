@@ -6,6 +6,15 @@ Besides REST consumers, GATE provides **browser-based** UIs built with Django (t
 
 **Intended users:** company administrators, back-office staff, finance, operations.
 
+### Public portal (current)
+
+The **`web_ui_app`** package is registered in the project and serves:
+
+- A **landing page** at `/` for anonymous visitors (signed-in users are redirected to `/dashboard/`).
+- **Session authentication** pages: register, log in, log out, and change password (see [08-public-web-portal-landing-and-accounts.md](08-public-web-portal-landing-and-accounts.md)).
+
+This complements **Django Admin** (`/admin/`) and will grow into deeper ERP-style screens over time.
+
 ## ERP-style depth (roadmap)
 
 The web layer is not only CRUD; it aims toward **ERP-like** capabilities over time:

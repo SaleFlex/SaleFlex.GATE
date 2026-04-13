@@ -1,0 +1,44 @@
+{% extends "web_ui_app/base.html" %}
+
+{% block title %}SaleFlex.GATE — Hub for your retail stack{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h1>SaleFlex.GATE</h1>
+    <p class="lead">
+        The central <strong>Django</strong> and <strong>Django REST Framework</strong> hub for the SaleFlex ecosystem:
+        stores, terminals, restaurant flows, mobile apps, and optional third-party systems — aligned with
+        <a href="https://github.com/SaleFlex/SaleFlex.PyPOS" rel="noopener">SaleFlex.PyPOS</a> and related clients.
+    </p>
+    <p>
+        <a class="btn btn-primary" href="{% url 'register' %}">Create an account</a>
+        <a class="btn" href="{% url 'login' %}">Log in</a>
+    </p>
+
+    <h2>What GATE does</h2>
+    <div class="feature-grid">
+        <div class="feature">
+            <h3>Multi-tenant hub</h3>
+            <p>Companies, stores, and terminal profiles as the basis for data isolation and API access.</p>
+        </div>
+        <div class="feature">
+            <h3>REST APIs</h3>
+            <p>Versioned JSON for devices and mobile; merchant token auth for POS-style integrations.</p>
+        </div>
+        <div class="feature">
+            <h3>POS-aligned domain</h3>
+            <p>Merchants, closures, warehouses, customers, and reference data under active development.</p>
+        </div>
+        <div class="feature">
+            <h3>Integration gateway</h3>
+            <p>Front ERP, loyalty, campaign, and payment adapters so edge apps stay thin.</p>
+        </div>
+    </div>
+
+    <h2>Documentation</h2>
+    <p class="lead" style="margin-bottom: 0;">
+        Architecture and tenancy are described in the <code>docs/</code> folder and the project README.
+        This site is a starting point for browser-based access; ERP-style screens will grow over time.
+    </p>
+</section>
+{% endblock %}

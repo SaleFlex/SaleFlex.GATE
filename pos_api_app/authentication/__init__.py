@@ -1,1 +1,1 @@
-from merchant_token_authentication import MerchantTokenAuthentication
+from .merchant_token_authentication import MerchantTokenAuthentication
