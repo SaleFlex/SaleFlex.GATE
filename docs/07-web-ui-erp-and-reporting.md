@@ -15,6 +15,8 @@ The **`web_ui_app`** package is registered in the project and serves:
 
 This complements **Django Admin** (`/admin/`) and will grow into deeper ERP-style screens over time.
 
+Shared **styles and icons** for the public portal are served as Django static files under `web_ui_app/static/web_ui_app/` (see [08-public-web-portal-landing-and-accounts.md](08-public-web-portal-landing-and-accounts.md)).
+
 ## ERP-style depth (roadmap)
 
 The web layer is not only CRUD; it aims toward **ERP-like** capabilities over time:

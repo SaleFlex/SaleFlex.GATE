@@ -85,6 +85,10 @@ SaleFlex.GATE/
 ├── web_ui_app/               # Public landing + session auth; base for future ERP-style UI
 │   ├── forms.py              # Registration (UserCreationForm extension)
 │   ├── urls.py               # /, /dashboard/, /accounts/...
+│   ├── static/web_ui_app/    # Portal CSS, favicon, and optional JS (Django staticfiles)
+│   │   ├── css/base.css
+│   │   ├── icons/favicon.svg
+│   │   └── js/               # Page scripts (add files as needed)
 │   ├── templates/            # Landing, auth, registration templates
 │   ├── admin.py
 │   ├── apps.py
@@ -203,6 +207,13 @@ Open **Django Admin**: [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admi
 - **DEBUG** — Set `DEBUG = False` and configure `ALLOWED_HOSTS` in production.
 - **Database** — Point `DATABASES['default']` to PostgreSQL when moving beyond local SQLite.
 - **`web_ui_app`** — Enabled in `INSTALLED_APPS` with URLs at the site root (`/`). Adjust `LOGIN_*` / `LOGOUT_REDIRECT_URL` in `settings.py` if you change paths.
+
+### Web UI static files and icons
+
+- **Styles** — Shared layout and components for the portal live in `web_ui_app/static/web_ui_app/css/base.css` and are linked from `templates/web_ui_app/base.html` via `{% static %}`.
+- **Favicon** — `web_ui_app/static/web_ui_app/icons/favicon.svg` is referenced as `rel="icon"` (SVG) and `apple-touch-icon` for bookmarks and home-screen shortcuts.
+- **JavaScript** — There is no inline script in the current templates; add files under `web_ui_app/static/web_ui_app/js/` and include them from `{% block extra_head %}` (or a dedicated `{% block extra_js %}` if you introduce one) when a page needs behaviour.
+- **Production** — Run `python manage.py collectstatic` and serve the collected files behind your web server or CDN; set `STATIC_ROOT` in settings when you deploy (see [Django static files](https://docs.djangoproject.com/en/stable/howto/static-files/deployment/)).
 
 ---
 

@@ -3,7 +3,7 @@
 {% block title %}Create account — SaleFlex.GATE{% endblock %}
 
 {% block content %}
-<div class="card" style="max-width: 420px; margin: 0 auto;">
+<div class="card card-narrow">
     <h1>Create account</h1>
     <p class="lead">Register a hub user. Company membership and invitations are described in the project docs.</p>
     <form method="post" action="">
@@ -16,9 +16,9 @@
                 {{ field.errors }}
             </div>
         {% endfor %}
-        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">Register</button>
+        <button type="submit" class="btn btn-primary btn-block btn-block-spaced">Register</button>
     </form>
-    <p style="margin-top: 1.25rem; font-size: 0.9rem; color: var(--muted);">
+    <p class="auth-footer">
         Already have an account? <a href="{% url 'login' %}">Log in</a>
     </p>
 </div>
