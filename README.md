@@ -68,6 +68,7 @@ SaleFlex.GATE/
 ├── manage.py                 # Django entry point
 ├── requirements.txt          # django, djangorestframework
 ├── db.sqlite3                # Default dev DB (after migrate; may be gitignored)
+├── staticfiles/              # After collectstatic (gitignored; not shipped in the repo)
 │
 ├── gate_project/             # Project settings package
 │   ├── settings.py           # INSTALLED_APPS, REST_FRAMEWORK, DATABASES
@@ -145,6 +146,7 @@ python -m venv .venv
 
 pip install -r requirements.txt
 python manage.py migrate
+python manage.py collectstatic --noinput
 python manage.py createsuperuser   # optional — for Django Admin
 python manage.py runserver
 ```
@@ -191,12 +193,17 @@ Open **Django Admin**: [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admi
    python manage.py migrate
    ```
 
-5. **Create a superuser** (for admin access):
+5. **Collect static files** into `staticfiles/` (this folder is gitignored; every fresh clone needs this step so Django Admin assets and `web_ui_app` static files are available when you serve `STATIC_ROOT`):
+   ```bash
+   python manage.py collectstatic --noinput
+   ```
+
+6. **Create a superuser** (for admin access):
    ```bash
    python manage.py createsuperuser
    ```
 
-6. **Run the development server:**
+7. **Run the development server:**
    ```bash
    python manage.py runserver
    ```
@@ -213,7 +220,8 @@ Open **Django Admin**: [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admi
 - **Styles** — Shared layout and components for the portal live in `web_ui_app/static/web_ui_app/css/base.css` and are linked from `templates/web_ui_app/base.html` via `{% static %}`.
 - **Favicon** — `web_ui_app/static/web_ui_app/icons/favicon.svg` is referenced as `rel="icon"` (SVG) and `apple-touch-icon` for bookmarks and home-screen shortcuts.
 - **JavaScript** — There is no inline script in the current templates; add files under `web_ui_app/static/web_ui_app/js/` and include them from `{% block extra_head %}` (or a dedicated `{% block extra_js %}` if you introduce one) when a page needs behaviour.
-- **Production** — Run `python manage.py collectstatic` and serve the collected files behind your web server or CDN; set `STATIC_ROOT` in settings when you deploy (see [Django static files](https://docs.djangoproject.com/en/stable/howto/static-files/deployment/)).
+- **Collected output** — `STATIC_ROOT` is `staticfiles/` at the project root; it is listed in `.gitignore`. After cloning, run `python manage.py collectstatic --noinput` as part of setup (see [Installation & Setup](#installation--setup)).
+- **Production** — Serve the contents of `staticfiles/` behind your web server or CDN (see [Django static files](https://docs.djangoproject.com/en/stable/howto/static-files/deployment/)).
 
 ---
 

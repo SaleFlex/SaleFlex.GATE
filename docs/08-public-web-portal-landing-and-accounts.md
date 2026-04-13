@@ -35,7 +35,7 @@ Portal **CSS** is kept out of inline `<style>` blocks: shared rules live in `web
 
 **JavaScript:** Current templates do not embed inline scripts. Add scripts under `web_ui_app/static/web_ui_app/js/` and reference them from `{% block extra_head %}` on the templates that need them (or extend the base template with an additional block if you prefer scripts at the end of `<body>`).
 
-For production deployments, use `collectstatic` and configure `STATIC_ROOT` and your reverse proxy or object storage according to [Django’s static files deployment guide](https://docs.djangoproject.com/en/stable/howto/static-files/deployment/).
+`STATIC_ROOT` is the project-level `staticfiles/` directory (gitignored). **Every fresh clone** should run `python manage.py collectstatic --noinput` during setup so that directory exists; otherwise deployments (or any server that reads from `STATIC_ROOT`) will miss admin and portal static files. For production, serve that output behind your reverse proxy or object storage per [Django’s static files deployment guide](https://docs.djangoproject.com/en/stable/howto/static-files/deployment/).
 
 ## Relation to identity and tenancy
 

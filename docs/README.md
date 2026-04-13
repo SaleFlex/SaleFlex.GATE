@@ -20,6 +20,10 @@ This folder describes the **target architecture** of **SaleFlex.GATE** and the i
 - [SaleFlex.PyPOS — Integration Layer](https://github.com/SaleFlex/SaleFlex.PyPOS/blob/main/docs/40-integration-layer.md)  
 - PyPOS `settings.toml` `[gate]` section: `base_url`, `manages_transactions`, `manages_campaign`, etc.
 
+## Local setup (GATE checkout)
+
+After `pip install -r requirements.txt` and `python manage.py migrate`, run **`python manage.py collectstatic --noinput`**. The `staticfiles/` directory is not committed; it is created by `collectstatic` and holds Django Admin and `web_ui_app` assets for any setup that serves `STATIC_ROOT`. The root [README.md](../README.md) Quick Start and Installation sections repeat this step.
+
 ## Contributing
 
 Open an issue or pull request on the GATE repository for corrections or gaps in these drafts.
