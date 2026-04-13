@@ -1,28 +1,337 @@
-> **Under development. The project is not working properly yet.**
+> **Under development.** The project is not production-ready yet. APIs and data models described here reflect the **target architecture** aligned with [SaleFlex.PyPOS](https://github.com/SaleFlex/SaleFlex.PyPOS).
 
 # SaleFlex.GATE
 
-**SaleFlex.GATE** is a centralized management system designed to work with multiple instances of the **SaleFlex.POS** application. It acts as a control hub for businesses operating across multiple locations, providing comprehensive support for inventory and sales tracking. SaleFlex.GATE also offers seamless integration with ERP systems, ensuring that data flow between your POS systems and enterprise software is efficient and reliable. This project leverages **Django** and **Django REST Framework** to deliver robust and efficient backend services.
+**SaleFlex.GATE** is the central **hub** for the SaleFlex ecosystem: a **Django** and **Django REST Framework** backend that ties together stores, terminals, restaurant flows, mobile apps, and optional third-party systems.
 
-### Important Note
-SaleFlex.GATE is designed to work in conjunction with the [SaleFlex.PyPOS](https://github.com/SaleFlex/SaleFlex.PyPOS) and [SaleFlex.POS](https://github.com/SaleFlex/SaleFlex.POS) projects, which serves as the retail sales interface. Together, these systems provide a comprehensive solution for managing retail operations.
+It is the primary integration point for **[SaleFlex.PyPOS](https://github.com/SaleFlex/SaleFlex.PyPOS)** (touch POS), **[SaleFlex.KITCHEN](https://github.com/SaleFlex/SaleFlex.KITCHEN)** (kitchen / production display where applicable), and future **[SaleFlex.POS](https://github.com/SaleFlex/SaleFlex.POS)** clients. PyPOS connects through `pos/integration/gate/` (HTTP client, auth, push/pull sync, offline outbox) as documented in PyPOS [Integration Layer](https://github.com/SaleFlex/SaleFlex.PyPOS/blob/main/docs/40-integration-layer.md).
 
-# Project Roadmap
-- [ ] Initial Database Structure
-- [ ] Data Access and Sync Layer
-- [ ] Multi-POS Management Module
-- [ ] ERP Integration Layer
-- [ ] Reporting Module
-- [ ] Dashboard Interface
+---
 
-# Key Features:
-- **Centralized Management:** Easily manage and monitor multiple SaleFlex.POS systems from one location, offering real-time insights into sales, stock levels, and more.
-- **Cloud-Based Flexibility:** SaleFlex.GATE allows business owners and managers to access and control their operations remotely, providing the convenience and flexibility needed in today’s fast-paced retail environment.
-- **ERP Integration:** Seamlessly connect with your existing ERP system to ensure data synchronization between your POS systems and enterprise management software.
-- **Scalable Architecture:** As your business expands, SaleFlex.GATE grows with you, providing scalability to handle increasing numbers of stores and POS systems without compromising performance.
-- **Open-Source Solution:** SaleFlex.GATE is open-source, giving you the freedom to customize and adapt it to your business needs.
+## Key Features
 
-# Contributors
+- **Multi-tenant hub** — Companies, stores, and terminal profiles as the basis for isolating data and API access.
+- **Django REST Framework** — Versioned JSON APIs for devices (PyPOS, KITCHEN) and mobile clients; merchant token authentication (see `pos_api_app.authentication`).
+- **POS-aligned domain models** — Merchant, store, POS, closure, warehouse, customer, and related reference entities under `pos_api_app` (evolving toward full sync with PyPOS payloads).
+- **Django Admin** — Built-in admin site for early data management (`/admin/`).
+- **Web UI foundation** — `web_ui_app` package reserved for custom ERP-style screens (wire into `INSTALLED_APPS` when ready).
+- **Integration gateway** — Designed to front ERP, loyalty, campaign, and payment adapters so edge apps stay thin.
+- **Reporting & back office (roadmap)** — Aggregated sales, stock, and KPIs via web UI and APIs.
+- **Open source** — Extend and deploy for your own infrastructure.
+
+---
+
+## Architecture Overview
+
+GATE sits between **edge clients** (POS, kitchen, mobile) and **optional enterprise systems**. Clients authenticate and call REST endpoints; the hub persists and routes data according to company/store scope.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                     Clients (HTTPS)                             │
+│  SaleFlex.PyPOS · SaleFlex.KITCHEN · Mobile apps · Future SPA   │
+└────────────────────────────┬────────────────────────────────────┘
+                             │
+                             ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    SaleFlex.GATE (Django)                       │
+│  ┌──────────────┐  ┌──────────────┐  ┌────────────────────────┐ │
+│  │ Django Admin │  │ REST (DRF)   │  │ Web UI (web_ui_app)    │ │
+│  │ + sessions   │  │ + auth       │  │ (ERP-style, roadmap)   │ │
+│  └──────────────┘  └──────────────┘  └────────────────────────┘ │
+│                             │                                   │
+│  ┌──────────────────────────┴───────────────────────────────┐   │
+│  │  Domain layer: merchants, stores, POS, closures, stock   │   │
+│  └──────────────────────────┬───────────────────────────────┘   │
+└─────────────────────────────┼───────────────────────────────────┘
+                              │
+              ┌───────────────┼───────────────┐
+              ▼               ▼               ▼
+        ┌──────────┐   ┌──────────┐   ┌──────────────┐
+        │ SQLite / │   │ ERP      │   │ Loyalty /    │
+        │ Postgres │   │ adapters │   │ Campaign /   │
+        │ (DB)     │   │ (future) │   │ Payment      │
+        └──────────┘   └──────────┘   └──────────────┘
+```
+
+**Layers (conceptual):**
+
+- **API layer** — DRF views/serializers (to be expanded), authentication, throttling, versioning (`/api/v1/...` target; see [docs/04-rest-api-conventions.md](docs/04-rest-api-conventions.md)).
+- **Application layer** — Services for sync ingestion, reporting, and integration jobs (strengthened over time).
+- **Data layer** — Django ORM models in `pos_api_app` (and future apps) backed by SQLite (dev) or PostgreSQL (recommended production).
+
+---
+
+## Project Structure
+
+```
+SaleFlex.GATE/
+├── manage.py                 # Django entry point
+├── requirements.txt          # django, djangorestframework
+├── db.sqlite3                # Default dev DB (after migrate; may be gitignored)
+│
+├── gate_project/             # Project settings package
+│   ├── settings.py           # INSTALLED_APPS, REST_FRAMEWORK, DATABASES
+│   ├── urls.py               # Root URLconf (admin, future API includes)
+│   ├── wsgi.py
+│   └── asgi.py
+│
+├── pos_api_app/              # POS / merchant API app
+│   ├── authentication/       # e.g. MerchantTokenAuthentication
+│   ├── models/               # Merchant, Store, Pos, Closure, Warehouse, …
+│   ├── admin.py
+│   ├── apps.py
+│   └── tests.py
+│
+├── web_ui_app/               # Placeholder for custom web screens (not in INSTALLED_APPS until wired)
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py
+│   ├── views.py
+│   └── tests.py
+│
+└── docs/                     # Architecture drafts (English)
+    ├── README.md
+    └── 01-…07-*.md
+```
+
+---
+
+## System Requirements
+
+### Runtime
+
+- **Python** 3.12 or newer (required for **Django 6.x**; check [Django supported versions](https://docs.djangoproject.com/en/stable/faq/install/#faq-python-version-support) if you change the Django major version).
+- **pip** (current toolchain).
+
+### Python dependencies
+
+Pinned in `requirements.txt` (example versions in-repo):
+
+- `django`
+- `djangorestframework`
+
+### Database
+
+- **SQLite** — default in `settings.py` for local development.
+- **PostgreSQL** — recommended for production (configure `DATABASES` and drivers when you deploy).
+
+### Optional (future / production)
+
+- Reverse proxy (nginx, Caddy) and TLS termination  
+- Redis or similar for caching, sessions, or task queues when async jobs are added  
+- Container runtime (Docker) if you package the service
+
+---
+
+## Quick Start
+
+```bash
+git clone https://github.com/SaleFlex/SaleFlex.GATE.git
+cd SaleFlex.GATE
+python -m venv .venv
+
+# Windows
+.venv\Scripts\activate.bat
+
+# macOS / Linux
+# source .venv/bin/activate
+
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py createsuperuser   # optional — for Django Admin
+python manage.py runserver
+```
+
+Open **Django Admin**: [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)
+
+> REST API routes are still being expanded; root `urls.py` currently exposes the admin site. Follow the [Development Roadmap](#development-roadmap) and `docs/` for the target API surface.
+
+---
+
+## Installation & Setup
+
+### Prerequisites
+
+1. Install [Python 3.12+](https://www.python.org/downloads/).
+2. Ensure `pip` is available (`python -m pip install --upgrade pip`).
+
+### Steps
+
+1. **Clone the repository** (or extract the sources) and change into the project directory.
+
+2. **Create and activate a virtual environment** (recommended):
+
+   **Windows:**
+   ```cmd
+   python -m venv .venv
+   .venv\Scripts\activate.bat
+   ```
+
+   **macOS / Linux:**
+   ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate
+   ```
+
+3. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Apply migrations:**
+   ```bash
+   python manage.py migrate
+   ```
+
+5. **Create a superuser** (for admin access):
+   ```bash
+   python manage.py createsuperuser
+   ```
+
+6. **Run the development server:**
+   ```bash
+   python manage.py runserver
+   ```
+
+### Configuration notes
+
+- **SECRET_KEY** — Replace the development key in `gate_project/settings.py` before any production deployment; use environment variables or a secrets manager.
+- **DEBUG** — Set `DEBUG = False` and configure `ALLOWED_HOSTS` in production.
+- **Database** — Point `DATABASES['default']` to PostgreSQL when moving beyond local SQLite.
+- **`web_ui_app`** — Add `'web_ui_app'` to `INSTALLED_APPS` and include its URLs when you start using custom views.
+
+---
+
+## Role in the ecosystem
+
+| Client | Role |
+|--------|------|
+| **SaleFlex.PyPOS** | Store-floor POS: sales, payments, closure, local warehouse movements, campaigns/loyalty (local or GATE-managed). Syncs transactions, closures, stock events, and pulls master data and campaign definitions from GATE when enabled. |
+| **SaleFlex.KITCHEN** | Restaurant kitchen line: order display and preparation workflow; registered per store like a terminal profile. |
+| **Django web UI** | Administration and **ERP-style** operational screens (master data, purchasing-style flows, configuration). |
+| **Mobile apps** | Same REST surface as POS/kitchen: management, stocktake, waiter ordering, and reporting (see below). |
+| **Third-party systems** | ERP, loyalty, campaign orchestration, payment switches—connected via GATE as the integration boundary. |
+
+---
+
+## Tenancy: accounts, companies, and stores
+
+1. **User account**  
+   When a user registers, they either **create their own company (or companies)** or are **added to an existing company**.
+
+2. **Joining another company**  
+   Membership in a company defined by someone else is granted only by **company administrators** (or equivalent “manage users / organization” role). Self-service join without admin approval is not the default model.
+
+3. **Company → stores**  
+   Under each company, one or more **stores** (locations) are defined.
+
+4. **Store → terminals**  
+   Each store has one or more **POS terminal registrations** (SaleFlex.PyPOS instances: identity, credentials, sync policy).  
+   For restaurants, the same store may also register **SaleFlex.KITCHEN** application instances.
+
+This hierarchy is the basis for **authorization**, **data partitioning**, and **API scoping** (JWT / API keys bound to company, store, and device).
+
+---
+
+## REST API and clients
+
+- **Django REST Framework** exposes versioned APIs for:
+  - Authentication and device/session management  
+  - Company and store configuration  
+  - Product and price distribution, campaigns, notifications (consumed by PyPOS pull/sync)  
+  - Transaction and closure ingestion (PyPOS push)  
+  - Warehouse events and stock alignment (where GATE is authoritative)  
+  - Kitchen / order flows where GATE is the hub  
+
+- **Mobile applications** (outside the Django HTML UI) authenticate against the same APIs:
+  - **Operations / management:** companies, stores, POS (and kitchen) definitions, dashboards, **reports**.  
+  - **Stocktake / inventory counting:** field staff at stores; mobile captures counts and adjustments according to store policy.  
+  - **Waiter / table service:** order capture for restaurant scenarios, aligned with kitchen and POS backends.
+
+Detailed drafts: [docs/README.md](docs/README.md).
+
+---
+
+## Third-party integrations
+
+GATE is designed as the **integration gateway** so edge clients stay simple. Examples of external systems:
+
+- **ERP** — items, cost centers, purchase orders, financial postings (adapter-specific).  
+- **Loyalty** — member lookup, earn/burn rules, balances (may override or complement PyPOS local loyalty when `gate.manages_*` flags apply).  
+- **Campaign** — central promotion engine and coupon validation when campaign management is delegated to GATE (see PyPOS `gate.manages_campaign`).  
+- **Payment** — routing to PSPs, reconciliation, or terminal orchestration where applicable.
+
+Connectors are intended to live behind clear **service interfaces** so core REST and web UI do not embed vendor-specific logic.
+
+---
+
+## Web application: ERP-style UI and reporting
+
+Beyond REST consumers, GATE ships (or will ship) **Django-based web interfaces** that provide:
+
+- **ERP-like** operational depth: organizational setup, master data, inventory and procurement-style processes as the product matures.  
+- **Reporting:** aggregated sales, stock, and operational KPIs across companies and stores, exportable and suitable for management users.
+
+---
+
+## Documentation
+
+| Resource | Description |
+|----------|-------------|
+| [docs/README.md](docs/README.md) | Documentation index (draft). |
+| [docs/01-ecosystem-and-boundaries.md](docs/01-ecosystem-and-boundaries.md) | How GATE relates to PyPOS, KITCHEN, mobile, and third parties. |
+| [docs/02-identity-tenancy-and-rbac.md](docs/02-identity-tenancy-and-rbac.md) | Accounts, companies, store membership, admin-invited users. |
+| [docs/03-stores-terminals-and-kitchen.md](docs/03-stores-terminals-and-kitchen.md) | Stores, PyPOS and KITCHEN registration. |
+| [docs/04-rest-api-conventions.md](docs/04-rest-api-conventions.md) | API style, auth, versioning (draft). |
+| [docs/05-mobile-client-scenarios.md](docs/05-mobile-client-scenarios.md) | Management, stocktake, waiter apps. |
+| [docs/06-third-party-integrations.md](docs/06-third-party-integrations.md) | ERP, loyalty, campaign, payment. |
+| [docs/07-web-ui-erp-and-reporting.md](docs/07-web-ui-erp-and-reporting.md) | Django UI and reporting scope. |
+
+---
+
+## Development Roadmap
+
+### Platform & security
+
+- [ ] Production settings: environment-based `SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS`, HTTPS headers  
+- [ ] PostgreSQL configuration template and migration path from SQLite  
+- [ ] Rate limiting and structured logging for API access  
+
+### Data model & tenancy
+
+- [ ] First-class **user ↔ company** membership and invitation flow aligned with admin-approved join  
+- [ ] RBAC roles scoped by company and store  
+- [ ] Terminal/device registry linked to **PyPOS** / **KITCHEN** identities and sync policy  
+
+### REST API
+
+- [ ] Versioned public API (`/api/v1/`) with OpenAPI schema  
+- [ ] Push endpoints: transactions, closures, warehouse events (aligned with PyPOS serializers)  
+- [ ] Pull endpoints: products, prices, campaigns, notifications  
+- [ ] JWT (users) vs long-lived device tokens — documented in [docs/04-rest-api-conventions.md](docs/04-rest-api-conventions.md)  
+
+### Web & mobile consumers
+
+- [ ] Multi-store and multi-terminal management in web UI  
+- [ ] Register `web_ui_app` and build ERP-style screens incrementally  
+- [ ] Mobile-oriented endpoints: management dashboards, stocktake sessions, waiter/order flows  
+
+### Integrations & reporting
+
+- [ ] Third-party adapter framework (ERP, loyalty, campaign, payment)  
+- [ ] Reporting layer: sales, stock, campaign/loyalty KPIs, exports  
+
+---
+
+## Related repositories
+
+- [SaleFlex.PyPOS](https://github.com/SaleFlex/SaleFlex.PyPOS) — Python/PySide6 POS (GATE integration in `pos/integration/gate/`).  
+- [SaleFlex.KITCHEN](https://github.com/SaleFlex/SaleFlex.KITCHEN) — Kitchen client.  
+- [SaleFlex.POS](https://github.com/SaleFlex/SaleFlex.POS) — Related POS line (ecosystem).  
+
+---
+
+## Contributors
 
 <table>
 <tr>
@@ -36,11 +345,12 @@ SaleFlex.GATE is designed to work in conjunction with the [SaleFlex.PyPOS](https
 </tr>
 </table>
 
-# Donation and Support
+## Donation and Support
+
 If you like the project and want to support it or if you want to contribute to the development of new modules, you can donate to the following crypto addresses.
 
-- USDT: 0xa5a87a939bfcd492f056c26e4febe102ea599b5b
-- BUSD: 0xa5a87a939bfcd492f056c26e4febe102ea599b5b
-- BTC: 184FDZ1qV2KFzEaNqMefw8UssG8Z57FA6F
-- ETH: 0xa5a87a939bfcd492f056c26e4febe102ea599b5b
-- SOL: Gt3bDczPcJvfBeg9TTBrBJGSHLJVkvnSSTov8W3QMpQf
+- USDT: `0xa5a87a939bfcd492f056c26e4febe102ea599b5b`
+- BUSD: `0xa5a87a939bfcd492f056c26e4febe102ea599b5b`
+- BTC: `15qyZpi6HjYyVhKKBsCbZSXU4bLdVJ8Phe`
+- ETH: `0xa5a87a939bfcd492f056c26e4febe102ea599b5b`
+- SOL: `Gt3bDczPcJvfBeg9TTBrBJGSHLJVkvnSSTov8W3QMpQf`
