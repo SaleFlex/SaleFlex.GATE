@@ -49,4 +49,4 @@ def register(request):
             return redirect("dashboard")
     else:
         form = GateUserCreationForm()
-    return render(request, "web_ui_app/register.html", {"form": form})
+    return render(request, "registration/register.html", {"form": form})
