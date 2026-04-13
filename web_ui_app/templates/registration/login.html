@@ -9,14 +9,18 @@
     <form method="post" action="{% url 'login' %}">
         {% csrf_token %}
         {% if form.non_field_errors %}
-            <ul class="errorlist">{{ form.non_field_errors }}</ul>
+            {{ form.non_field_errors }}
         {% endif %}
         {% for field in form %}
-            <div class="form-row">
-                {{ field.label_tag }}
+            {% if field.is_hidden %}
                 {{ field }}
+            {% else %}
+            <div class="form-row">
+                <label for="{{ field.id_for_label }}">{{ field.label }}{{ form.label_suffix }}</label>
+                {{ field.as_widget }}
                 {{ field.errors }}
             </div>
+            {% endif %}
         {% endfor %}
         {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
         <button type="submit" class="btn btn-primary btn-block">Log in</button>

@@ -9,12 +9,16 @@
     <form method="post" action="">
         {% csrf_token %}
         {% for field in form %}
-            <div class="form-row">
-                {{ field.label_tag }}
+            {% if field.is_hidden %}
                 {{ field }}
-                {% if field.help_text %}<div class="helptext">{{ field.help_text }}</div>{% endif %}
+            {% else %}
+            <div class="form-row">
+                <label for="{{ field.id_for_label }}">{{ field.label }}{{ form.label_suffix }}</label>
+                {{ field.as_widget }}
+                {% if field.help_text %}<div class="helptext"{% if field.auto_id %} id="{{ field.auto_id }}_helptext"{% endif %}>{{ field.help_text|safe }}</div>{% endif %}
                 {{ field.errors }}
             </div>
+            {% endif %}
         {% endfor %}
         <button type="submit" class="btn btn-primary btn-block btn-block-spaced">Register</button>
     </form>

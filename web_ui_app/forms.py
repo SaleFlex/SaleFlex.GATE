@@ -21,8 +21,37 @@
 # SOFTWARE.
 
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import (
+    AuthenticationForm,
+    PasswordChangeForm,
+    UserCreationForm,
+)
 from django.contrib.auth.models import User
+
+from .widgets import AtomicEmailInput, AtomicPasswordInput, AtomicTextInput
+
+
+class GateAuthenticationForm(AuthenticationForm):
+    def __init__(self, request=None, *args, **kwargs):
+        super().__init__(request, *args, **kwargs)
+        u, p = self.fields["username"], self.fields["password"]
+        u.widget = AtomicTextInput(attrs={**u.widget.attrs})
+        p.widget = AtomicPasswordInput(
+            attrs={**p.widget.attrs},
+            render_value=p.widget.render_value,
+        )
+
+
+class GatePasswordChangeForm(PasswordChangeForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            w = field.widget
+            if isinstance(w, forms.PasswordInput):
+                field.widget = AtomicPasswordInput(
+                    attrs={**w.attrs},
+                    render_value=w.render_value,
+                )
 
 
 class GateUserCreationForm(UserCreationForm):
@@ -31,3 +60,22 @@ class GateUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = User
         fields = ("username", "email")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if "username" in self.fields:
+            f = self.fields["username"]
+            f.widget = AtomicTextInput(attrs={**f.widget.attrs})
+        if "email" in self.fields:
+            f = self.fields["email"]
+            f.widget = AtomicEmailInput(attrs={**f.widget.attrs})
+        for name in ("password1", "password2"):
+            if name not in self.fields:
+                continue
+            f = self.fields[name]
+            w = f.widget
+            if isinstance(w, forms.PasswordInput):
+                f.widget = AtomicPasswordInput(
+                    attrs={**w.attrs},
+                    render_value=w.render_value,
+                )
