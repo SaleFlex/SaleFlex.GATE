@@ -54,11 +54,36 @@ class Company(models.Model):
 
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=96, unique=True, db_index=True)
+    # Optional registration details (aligned with typical UK limited-company data; only name is required)
+    companies_house_number = models.CharField(
+        max_length=32,
+        blank=True,
+        verbose_name="Companies House number",
+        help_text="Company registration number (CRN) from Companies House, if applicable.",
+    )
+    vat_number = models.CharField(
+        max_length=32,
+        blank=True,
+        verbose_name="VAT number",
+        help_text="VAT registration number, if applicable.",
+    )
+    registered_office = models.TextField(
+        blank=True,
+        verbose_name="Registered office address",
+        help_text="Registered office or principal trading address, if recorded.",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
         return self.name
+
+    def has_registration_details(self) -> bool:
+        return bool(
+            self.companies_house_number
+            or self.vat_number
+            or self.registered_office
+        )
 
 
 class CompanyMembership(models.Model):

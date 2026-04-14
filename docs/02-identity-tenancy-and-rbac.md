@@ -19,7 +19,7 @@
 User ──membership──▶ Company ──contains──▶ Store(s) ──registers──▶ Terminal / device profiles
 ```
 
-- **Company** — legal or logical tenant: branding, fiscal settings, integration credentials (where shared), user roster.  
+- **Company** — legal or logical tenant: branding, fiscal settings, integration credentials (where shared), user roster. In the session portal (`web_ui_app.Company`), optional fields `companies_house_number`, `vat_number`, and `registered_office` capture typical **UK limited company** registration data; only the **display name** is required when creating a company (see [09-portal-companies-ownership-and-deletion.md](09-portal-companies-ownership-and-deletion.md)).  
 - **Store** — physical or logical location: address, timezone, warehouse context, registers.  
 - **Terminal profile** — a bound **PyPOS** or **KITCHEN** (or future) instance with credentials and sync policy.
 

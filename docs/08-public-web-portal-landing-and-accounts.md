@@ -23,9 +23,9 @@ This layer is distinct from **device / merchant token** authentication used by P
 | `/accounts/password/change/` | Authenticated | Change password; confirmation at `/accounts/password/change/done/`. Linked from **Settings** in the account dropdown. |
 | `/accounts/password/change/done/` | Authenticated | Confirmation after a successful password change. |
 | `/companies/` | Authenticated | List companies the user belongs to (owner / administrator / member tags). |
-| `/companies/create/` | Authenticated | Create a portal company; creator becomes **owner** and **administrator**. |
+| `/companies/create/` | Authenticated | Create a portal company; creator becomes **owner** and **administrator**. Only the **company name** is required; optional registration fields (Companies House, VAT, registered office) can be filled (see [09-portal-companies-ownership-and-deletion.md](09-portal-companies-ownership-and-deletion.md)). |
 | `/companies/join/` | Authenticated | Submit a join request using a company **slug**; owners or administrators approve. |
-| `/companies/<slug>/` | Authenticated (member only) | Company detail: members, roles, join queue, owner assignment, deletion approvals. |
+| `/companies/<slug>/` | Authenticated (member only) | Company detail: members, roles, join queue, owner assignment, deletion approvals. **Owners and administrators** can update the company **name** and optional registration fields (the **slug** does not change). Plain members see a read-only summary when any of those fields are set. |
 
 ### Django Admin vs portal password change
 

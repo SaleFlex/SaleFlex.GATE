@@ -5,7 +5,7 @@
 {% block portal_content %}
 <div class="card card-narrow">
     <h1>Create a company</h1>
-    <p class="lead lead-tight">You become an <strong>owner</strong> and <strong>administrator</strong> automatically. You can invite others with the company slug after it is created.</p>
+    <p class="lead lead-tight">You become an <strong>owner</strong> and <strong>administrator</strong> automatically. You can invite others with the company slug after it is created. Only the <strong>company name</strong> is required; optional fields cover typical <strong>UK limited company</strong> registration details (Companies House number, VAT number, registered office).</p>
     <form method="post" action="">
         {% csrf_token %}
         {% for field in form %}

@@ -28,7 +28,7 @@ from django.db import transaction
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 
-from ..forms import CompanyCreateForm
+from ..forms import CompanyCreateForm, registration_kwargs_from_cleaned
 from ..models import Company, CompanyMembership
 from .company_helpers import make_unique_slug
 
@@ -41,7 +41,11 @@ def company_create(request: HttpRequest) -> HttpResponse:
             name = form.cleaned_data["name"].strip()
             slug = make_unique_slug(name)
             with transaction.atomic():
-                company = Company.objects.create(name=name, slug=slug)
+                company = Company.objects.create(
+                    name=name,
+                    slug=slug,
+                    **registration_kwargs_from_cleaned(form.cleaned_data),
+                )
                 CompanyMembership.objects.create(
                     company=company,
                     user=request.user,

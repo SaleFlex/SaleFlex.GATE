@@ -14,7 +14,7 @@ This folder describes the **target architecture** of **SaleFlex.GATE** and the i
 | 6 | [06-third-party-integrations.md](06-third-party-integrations.md) | ERP, loyalty, campaign, and payment integrations |
 | 7 | [07-web-ui-erp-and-reporting.md](07-web-ui-erp-and-reporting.md) | Django web UI, ERP-style capabilities, reporting |
 | 8 | [08-public-web-portal-landing-and-accounts.md](08-public-web-portal-landing-and-accounts.md) | Public landing, register, login, logout, **portal** password change (`web_ui_app`, separate from Django Admin); static CSS, icons, JS layout |
-| 9 | [09-portal-companies-ownership-and-deletion.md](09-portal-companies-ownership-and-deletion.md) | Portal sidebar, companies (create, join requests), **owner tag** vs **administrator**, multi-owner deletion approvals |
+| 9 | [09-portal-companies-ownership-and-deletion.md](09-portal-companies-ownership-and-deletion.md) | Portal sidebar, companies (create with optional registration fields, join requests), **owner tag** vs **administrator**, multi-owner deletion approvals |
 
 ## PyPOS references
 

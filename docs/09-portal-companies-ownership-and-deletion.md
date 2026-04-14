@@ -32,6 +32,22 @@ This document describes the **first web portal implementation** of hub **compani
 
 The user who creates a company receives **both** `is_owner=True` and `is_admin=True` on `CompanyMembership`.
 
+#### Optional registration fields (UK limited company shape)
+
+`web_ui_app.Company` stores **optional** identifiers named without a country prefix; they are intended to match typical **UK limited company** filings:
+
+| Field (all optional) | Model column |
+|------------------------|--------------|
+| Companies House company registration number (CRN) | `companies_house_number` |
+| VAT registration number | `vat_number` |
+| Registered office or principal trading address | `registered_office` |
+
+Only **`name`** is **required** on `/companies/create/`; every other field may be left empty. The portal **slug** is generated from the initial name and **does not** change when the name or registration fields are updated later.
+
+**Editing:** On `/companies/<slug>/`, **owners** and **administrators** see a **Company details** form (POST with `form_id=company_registration`) to update `name` and any optional registration fields. **Plain members** do not get the form; if any registration field is populated, they see a read-only **Company registration** summary on the same page.
+
+**Django Admin:** Staff can manage the same columns on `Company` via collapsible field groups.
+
 ### Joining a company
 
 Users submit a **join request** using the company **slug**. An **owner** or **administrator** approves or rejects. Approval creates a **member** row without owner or administrator flags unless changed later.
@@ -51,7 +67,7 @@ Removing the **last** owner tag is **blocked** in the UI and views: the company 
 | `/companies/` | List companies the user belongs to, with owner/admin/member tags. |
 | `/companies/create/` | Create a company (creator becomes owner + administrator). |
 | `/companies/join/` | Request to join by slug. |
-| `/companies/<slug>/` | Company home: members, join queue (if privileged), owner assignment, deletion workflow. |
+| `/companies/<slug>/` | Company home: members, join queue (if privileged), owner assignment, deletion workflow. Owners/admins: POST with `form_id=company_registration` updates `name` and optional registration fields (same URL). |
 | POST `/companies/<slug>/join/<id>/approve/` | Approve a join request. |
 | POST `/companies/<slug>/join/<id>/reject/` | Reject a join request. |
 | POST `/companies/<slug>/members/<user_id>/grant-admin/` | Grant administrator. |

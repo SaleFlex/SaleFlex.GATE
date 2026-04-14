@@ -31,7 +31,7 @@ class Country(models.Model):
     # Short code of the country, e.g., "US" or "TR"
     code = models.CharField(max_length=50, null=True, blank=True)
 
-    # Abbreviation or short name of the country, e.g., "USA" or "Türkiye"
+    # Abbreviation or short name of the country, e.g., "USA" or "TR"
     short_name = models.CharField(max_length=50, null=True, blank=True)
 
     # Currency code of the country, e.g., "USD" or "TRY"

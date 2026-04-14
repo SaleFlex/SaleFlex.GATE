@@ -28,7 +28,7 @@ from django.contrib.auth.forms import (
 )
 from django.contrib.auth.models import User
 
-from .models import UserProfile
+from .models import Company, UserProfile
 from .widgets import (
     AtomicEmailInput,
     AtomicFileInput,
@@ -119,11 +119,52 @@ class GateUserAvatarForm(forms.ModelForm):
         f.widget = AtomicFileInput(attrs={**f.widget.attrs})
 
 
+COMPANY_REGISTRATION_OPTIONAL_KEYS = (
+    "companies_house_number",
+    "vat_number",
+    "registered_office",
+)
+
+
+def registration_kwargs_from_cleaned(cleaned_data: dict) -> dict[str, str]:
+    """Map optional registration fields from a create form's cleaned_data to model kwargs."""
+    out: dict[str, str] = {}
+    for key in COMPANY_REGISTRATION_OPTIONAL_KEYS:
+        raw = cleaned_data.get(key)
+        if raw is None:
+            out[key] = ""
+        elif isinstance(raw, str):
+            out[key] = raw.strip()
+        else:
+            out[key] = str(raw)
+    return out
+
+
 class CompanyCreateForm(forms.Form):
     name = forms.CharField(
         max_length=200,
         label="Company name",
         widget=AtomicTextInput(attrs={"autocomplete": "organization"}),
+    )
+    companies_house_number = forms.CharField(
+        required=False,
+        max_length=32,
+        label="Companies House number (CRN)",
+        help_text="Optional. Company registration number from Companies House.",
+        widget=AtomicTextInput(attrs={"autocomplete": "off"}),
+    )
+    vat_number = forms.CharField(
+        required=False,
+        max_length=32,
+        label="VAT number",
+        help_text="Optional. VAT registration number.",
+        widget=AtomicTextInput(attrs={"autocomplete": "off"}),
+    )
+    registered_office = forms.CharField(
+        required=False,
+        label="Registered office address",
+        help_text="Optional. Registered office or principal trading address.",
+        widget=AtomicTextarea(attrs={"rows": 3}),
     )
 
     def clean_name(self) -> str:
@@ -131,6 +172,41 @@ class CompanyCreateForm(forms.Form):
         if not n:
             raise forms.ValidationError("Enter a company name.")
         return n
+
+
+class CompanyRegistrationForm(forms.ModelForm):
+    """Owner/admin: edit display name and optional registration fields (slug unchanged)."""
+
+    class Meta:
+        model = Company
+        fields = ("name",) + COMPANY_REGISTRATION_OPTIONAL_KEYS
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["name"].widget = AtomicTextInput(
+            attrs={**self.fields["name"].widget.attrs, "autocomplete": "organization"}
+        )
+        self.fields["registered_office"].widget = AtomicTextarea(
+            attrs={**self.fields["registered_office"].widget.attrs, "rows": 4}
+        )
+        for key in COMPANY_REGISTRATION_OPTIONAL_KEYS:
+            if key == "registered_office":
+                continue
+            f = self.fields[key]
+            f.widget = AtomicTextInput(attrs={**f.widget.attrs, "autocomplete": "off"})
+
+    def clean_name(self) -> str:
+        n = (self.cleaned_data.get("name") or "").strip()
+        if not n:
+            raise forms.ValidationError("Enter a company name.")
+        return n
+
+    def clean(self):
+        data = super().clean()
+        for name, val in list(data.items()):
+            if isinstance(val, str):
+                data[name] = val.strip()
+        return data
 
 
 class CompanyJoinForm(forms.Form):

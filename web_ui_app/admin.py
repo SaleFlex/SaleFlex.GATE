@@ -41,8 +41,32 @@ class UserProfileAdmin(admin.ModelAdmin):
 @admin.register(Company)
 class CompanyAdmin(admin.ModelAdmin):
     list_display = ("name", "slug", "created_at")
-    search_fields = ("name", "slug")
+    search_fields = (
+        "name",
+        "slug",
+        "companies_house_number",
+        "vat_number",
+    )
     prepopulated_fields = {"slug": ("name",)}
+    fieldsets = (
+        (None, {"fields": ("name", "slug")}),
+        (
+            "Registration",
+            {
+                "fields": (
+                    "companies_house_number",
+                    "vat_number",
+                    "registered_office",
+                ),
+                "classes": ("collapse",),
+            },
+        ),
+        (
+            "Timestamps",
+            {"fields": ("created_at", "updated_at"), "classes": ("collapse",)},
+        ),
+    )
+    readonly_fields = ("created_at", "updated_at")
 
 
 @admin.register(CompanyMembership)

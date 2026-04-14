@@ -416,3 +416,19 @@ footer.site { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(-
     color: var(--text);
     font: inherit;
 }
+
+.registration-dl {
+    margin: 0 0 1.5rem;
+    display: grid;
+    grid-template-columns: minmax(8rem, 12rem) 1fr;
+    gap: 0.35rem 1.25rem;
+}
+.registration-dl dt {
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+.registration-dl dd {
+    margin: 0;
+}
+.company-registration-form { margin-bottom: 1.5rem; }

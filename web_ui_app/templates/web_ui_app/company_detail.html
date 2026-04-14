@@ -14,6 +14,40 @@
         </span>
     </p>
 
+    {% if registration_form %}
+        <h2>Company details</h2>
+        <p class="lead lead-tight helptext">Only the <strong>company name</strong> is required. Registration fields are optional. The <strong>slug</strong> (used in join links) does not change when you update the name.</p>
+        <form method="post" action="" class="company-registration-form">
+            {% csrf_token %}
+            <input type="hidden" name="form_id" value="company_registration">
+            {% for field in registration_form %}
+                <div class="form-row">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}{{ registration_form.label_suffix }}</label>
+                    {{ field.as_widget }}
+                    {% if field.help_text %}<div class="helptext">{{ field.help_text|safe }}</div>{% endif %}
+                    {{ field.errors }}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary">Save company details</button>
+        </form>
+    {% elif company.has_registration_details %}
+        <h2>Company registration</h2>
+        <dl class="registration-dl">
+            {% if company.companies_house_number %}
+                <dt>Companies House (CRN)</dt>
+                <dd>{{ company.companies_house_number }}</dd>
+            {% endif %}
+            {% if company.vat_number %}
+                <dt>VAT number</dt>
+                <dd>{{ company.vat_number }}</dd>
+            {% endif %}
+            {% if company.registered_office %}
+                <dt>Registered office</dt>
+                <dd>{{ company.registered_office|linebreaksbr }}</dd>
+            {% endif %}
+        </dl>
+    {% endif %}
+
     {% if deletion_request %}
         <div class="banner banner--warning" role="status">
             <strong>Deletion pending.</strong>

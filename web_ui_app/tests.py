@@ -72,6 +72,76 @@ class PortalCompanyTests(TestCase):
         self.assertTrue(m.is_owner)
         self.assertTrue(m.is_admin)
 
+    def test_create_company_saves_optional_registration_fields(self):
+        self.client.login(username="owner1", password="pass-owner-1")
+        r = self.client.post(
+            reverse("company_create"),
+            {
+                "name": "Euro UK Ltd",
+                "companies_house_number": "",
+                "vat_number": "GB123456789",
+                "registered_office": "1 Test St, London",
+            },
+        )
+        self.assertEqual(r.status_code, 302)
+        c = Company.objects.get(name="Euro UK Ltd")
+        self.assertEqual(c.vat_number, "GB123456789")
+        self.assertEqual(c.registered_office, "1 Test St, London")
+
+    def test_owner_updates_registration_on_company_detail(self):
+        company = Company.objects.create(name="Co", slug="co-reg-test")
+        CompanyMembership.objects.create(
+            company=company,
+            user=self.owner,
+            is_owner=True,
+            is_admin=True,
+        )
+        payload = {
+            "form_id": "company_registration",
+            "name": "Co Legal Name",
+            "companies_house_number": "06548712",
+            "vat_number": "",
+            "registered_office": "",
+        }
+        self.client.login(username="owner1", password="pass-owner-1")
+        r = self.client.post(reverse("company_detail", args=[company.slug]), payload)
+        self.assertRedirects(r, reverse("company_detail", args=[company.slug]))
+        company.refresh_from_db()
+        self.assertEqual(company.name, "Co Legal Name")
+        self.assertEqual(company.companies_house_number, "06548712")
+
+    def test_plain_member_cannot_post_registration_update(self):
+        company = Company.objects.create(
+            name="Sec",
+            slug="sec-test",
+            vat_number="GB111111111",
+        )
+        CompanyMembership.objects.create(
+            company=company,
+            user=self.owner,
+            is_owner=True,
+            is_admin=True,
+        )
+        CompanyMembership.objects.create(
+            company=company,
+            user=self.other,
+            is_owner=False,
+            is_admin=False,
+        )
+        payload = {
+            "form_id": "company_registration",
+            "name": "Hacked",
+            "companies_house_number": "",
+            "vat_number": "GB999999999",
+            "registered_office": "",
+        }
+        self.client.login(username="member1", password="pass-member-1")
+        r = self.client.post(reverse("company_detail", args=[company.slug]), payload)
+        self.assertRedirects(r, reverse("company_detail", args=[company.slug]))
+        company.refresh_from_db()
+        self.assertEqual(company.name, "Sec")
+        self.assertEqual(company.vat_number, "GB111111111")
+
     def test_join_request_approve_adds_member(self):
         company = Company.objects.create(name="Co", slug="co-test")
         CompanyMembership.objects.create(
