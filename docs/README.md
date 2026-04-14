@@ -23,7 +23,7 @@ This folder describes the **target architecture** of **SaleFlex.GATE** and the i
 
 ## Local setup (GATE checkout)
 
-After `pip install -r requirements.txt` and `python manage.py migrate`, run **`python manage.py collectstatic --noinput`**. The `staticfiles/` directory is not committed; it is created by `collectstatic` and holds Django Admin and `web_ui_app` assets for any setup that serves `STATIC_ROOT`. The root [README.md](../README.md) Quick Start and Installation sections repeat this step.
+After `pip install -r requirements.txt`, run **`python manage.py makemigrations`**, then **`python manage.py migrate`**, then **`python manage.py collectstatic --noinput`**. App migration modules (other than `__init__.py`) are not committed; each checkout generates them locally. The `staticfiles/` directory is not committed; it is created by `collectstatic` and holds Django Admin and `web_ui_app` assets for any setup that serves `STATIC_ROOT`. The root [README.md](../README.md) Quick Start and Installation sections repeat this step.
 
 ## Contributing
 

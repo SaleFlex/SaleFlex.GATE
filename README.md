@@ -149,6 +149,7 @@ python -m venv .venv
 # source .venv/bin/activate
 
 pip install -r requirements.txt
+python manage.py makemigrations
 python manage.py migrate
 python manage.py collectstatic --noinput
 python manage.py createsuperuser   # optional — for Django Admin
@@ -192,8 +193,9 @@ Open **Django Admin**: [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admi
    pip install -r requirements.txt
    ```
 
-4. **Apply migrations:**
+4. **Create and apply migrations** (numbered migration files under each app’s `migrations/` folder are gitignored; generate them locally after clone):
    ```bash
+   python manage.py makemigrations
    python manage.py migrate
    ```
 

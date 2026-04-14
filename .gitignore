@@ -62,6 +62,9 @@ db.sqlite3
 db.sqlite3-journal
 staticfiles/
 media/
+# Migration modules are not versioned; each checkout runs makemigrations locally.
+**/migrations/*.py
+!**/migrations/__init__.py
 
 # Flask stuff:
 instance/
