@@ -24,7 +24,7 @@ from django.contrib.auth import views as auth_views
 from django.urls import path
 
 from . import views
-from .forms import GateAuthenticationForm, GatePasswordChangeForm
+from .forms import GateAuthenticationForm
 
 urlpatterns = [
     path("", views.landing, name="landing"),
@@ -46,17 +46,12 @@ urlpatterns = [
     ),
     path(
         "accounts/password/change/",
-        auth_views.PasswordChangeView.as_view(
-            template_name="registration/password_change_form.html",
-            form_class=GatePasswordChangeForm,
-        ),
+        views.password_change,
         name="password_change",
     ),
     path(
         "accounts/password/change/done/",
-        auth_views.PasswordChangeDoneView.as_view(
-            template_name="registration/password_change_done.html",
-        ),
+        views.password_change_done,
         name="password_change_done",
     ),
 ]

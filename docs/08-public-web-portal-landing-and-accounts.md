@@ -22,6 +22,12 @@ This layer is distinct from **device / merchant token** authentication used by P
 | `/accounts/logout/` | POST (CSRF-protected) | Ends the session; redirects to `/`. |
 | `/accounts/password/change/` | Authenticated | Change password; confirmation at `/accounts/password/change/done/`. Linked from **Settings** in the account dropdown. |
 
+### Django Admin vs portal password change
+
+**End users** change their own password through the **portal** URLs above (`views.password_change` / `views.password_change_done` in `web_ui_app/views.py`, form `GatePasswordChangeForm` in `web_ui_app/forms.py`, templates `web_ui_app/password_change.html` and `password_change_done.html` extending `base.html`). After a successful change, `update_session_auth_hash` keeps the browser session valid.
+
+**Django Admin** (`/admin/`) remains appropriate for **staff** managing model data; it is not positioned as the main UX for hub users updating their login password.
+
 ## Settings
 
 In `gate_project/settings.py`:

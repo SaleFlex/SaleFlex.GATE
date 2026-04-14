@@ -20,6 +20,33 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from django.contrib.auth.models import User
 from django.test import TestCase
+from django.urls import reverse
 
-# Create your tests here.
+
+class PortalPasswordChangeTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user("alice", password="oldpass12345")
+
+    def test_anonymous_redirects_to_login(self):
+        r = self.client.get(reverse("password_change"))
+        self.assertEqual(r.status_code, 302)
+        self.assertIn("/accounts/login/", r["Location"])
+
+    def test_post_updates_password_and_preserves_session(self):
+        self.client.login(username="alice", password="oldpass12345")
+        new_pw = "new-uncommon-pass-xyz-99"
+        r = self.client.post(
+            reverse("password_change"),
+            {
+                "old_password": "oldpass12345",
+                "new_password1": new_pw,
+                "new_password2": new_pw,
+            },
+        )
+        self.assertRedirects(r, reverse("password_change_done"))
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password(new_pw))
+        dash = self.client.get(reverse("dashboard"))
+        self.assertEqual(dash.status_code, 200)

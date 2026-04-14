@@ -21,11 +21,16 @@
 # SOFTWARE.
 
 from django.contrib import messages
-from django.contrib.auth import login
+from django.contrib.auth import login, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
-from .forms import GateUserAccountForm, GateUserAvatarForm, GateUserCreationForm
+from .forms import (
+    GatePasswordChangeForm,
+    GateUserAccountForm,
+    GateUserAvatarForm,
+    GateUserCreationForm,
+)
 from .models import UserProfile
 
 
@@ -38,6 +43,28 @@ def landing(request):
 @login_required
 def dashboard(request):
     return render(request, "web_ui_app/dashboard.html")
+
+
+@login_required
+def password_change(request):
+    if request.method == "POST":
+        form = GatePasswordChangeForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            return redirect("password_change_done")
+    else:
+        form = GatePasswordChangeForm(user=request.user)
+    return render(
+        request,
+        "web_ui_app/password_change.html",
+        {"form": form},
+    )
+
+
+@login_required
+def password_change_done(request):
+    return render(request, "web_ui_app/password_change_done.html")
 
 
 @login_required

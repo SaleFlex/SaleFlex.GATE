@@ -13,8 +13,8 @@ It is the primary integration point for **[SaleFlex.PyPOS](https://github.com/Sa
 - **Multi-tenant hub** — Companies, stores, and terminal profiles as the basis for isolating data and API access.
 - **Django REST Framework** — Versioned JSON APIs for devices (PyPOS, KITCHEN) and mobile clients; merchant token authentication (see `pos_api_app.authentication`).
 - **POS-aligned domain models** — Merchant, store, POS, closure, warehouse, customer, and related reference entities under `pos_api_app` (evolving toward full sync with PyPOS payloads).
-- **Django Admin** — Built-in admin site for early data management (`/admin/`).
-- **Web UI & public portal** — `web_ui_app` provides a landing page (guests), session login/register/logout/password change, a signed-in dashboard stub, an account menu (avatar with default placeholder, profile edit, settings submenu with change password), and optional profile picture uploads; ERP-style screens will extend this.
+- **Django Admin** — Built-in staff site for direct ORM/data management (`/admin/`). It is not the primary place for end-user account tasks.
+- **Web UI & public portal** — `web_ui_app` provides a landing page (guests), session login/register/logout, **portal-only** change password (`/accounts/password/change/`, templates under `web_ui_app/templates/web_ui_app/`), a signed-in dashboard stub, an account menu (avatar with default placeholder, profile edit, settings submenu with change password), and optional profile picture uploads; ERP-style screens will extend this.
 - **Integration gateway** — Designed to front ERP, loyalty, campaign, and payment adapters so edge apps stay thin.
 - **Reporting & back office (roadmap)** — Aggregated sales, stock, and KPIs via web UI and APIs.
 - **Open source** — Extend and deploy for your own infrastructure.
@@ -36,7 +36,7 @@ GATE sits between **edge clients** (POS, kitchen, mobile) and **optional enterpr
 │                    SaleFlex.GATE (Django)                       │
 │  ┌──────────────┐  ┌──────────────┐  ┌────────────────────────┐ │
 │  │ Django Admin │  │ REST (DRF)   │  │ Web UI (web_ui_app)    │ │
-│  │ + sessions   │  │ + auth       │  │ landing + session auth │ │
+│  │ staff / data │  │ + auth       │  │ landing + portal auth  │ │
 │  └──────────────┘  └──────────────┘  └────────────────────────┘ │
 │                             │                                   │
 │  ┌──────────────────────────┴───────────────────────────────┐   │
@@ -92,7 +92,7 @@ SaleFlex.GATE/
 │   │   ├── icons/favicon.svg
 │   │   ├── icons/avatar-default.svg
 │   │   └── js/               # e.g. user-menu.js for account dropdown
-│   ├── templates/            # Landing, auth, registration templates
+│   ├── templates/            # Landing, login/register, profile, password_change (portal chrome)
 │   ├── admin.py
 │   ├── apps.py
 │   ├── models.py             # UserProfile (optional avatar file)
@@ -341,7 +341,7 @@ Beyond REST consumers, GATE ships (or will ship) **Django-based web interfaces**
 ### Web & mobile consumers
 
 - [ ] Multi-store and multi-terminal management in web UI  
-- [x] Register `web_ui_app` — landing, session register/login/logout/password change, dashboard stub  
+- [x] Register `web_ui_app` — landing, session register/login/logout, portal password change (not Django Admin), dashboard stub  
 - [ ] ERP-style operational screens beyond the portal stub  
 - [ ] Mobile-oriented endpoints: management dashboards, stocktake sessions, waiter/order flows  
 

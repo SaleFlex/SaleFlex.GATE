@@ -183,6 +183,23 @@ header.site .brand:hover { text-decoration: none; color: var(--accent); }
     font-size: 0.9rem;
     color: var(--muted);
 }
+.auth-actions {
+    margin-top: 1.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.75rem;
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+.auth-actions--centered {
+    justify-content: center;
+    margin-top: 1rem;
+}
+.auth-actions__sep {
+    color: var(--border);
+    user-select: none;
+}
 .lead-tight { margin-bottom: 0; }
 .messages { list-style: none; padding: 0; margin: 0 0 1rem; }
 .messages li {
