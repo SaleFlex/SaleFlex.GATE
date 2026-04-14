@@ -48,7 +48,7 @@ Portal **CSS** is kept out of inline `<style>` blocks: shared rules live in `web
 
 **Favicons and touch icons:** `web_ui_app/static/web_ui_app/icons/favicon.svg` is wired as the primary `rel="icon"` (SVG, modern browsers) and as `apple-touch-icon`. Replace or extend this file (for example with PNG sizes) if you need broader legacy support.
 
-**JavaScript:** Shared layout loads `web_ui_app/static/web_ui_app/js/user-menu.js` (deferred, authenticated users only) to toggle the account dropdown and the **Settings** nested menu. Add more scripts under `web_ui_app/static/web_ui_app/js/` and reference them from `{% block extra_head %}` or an optional `{% block extra_scripts %}` if you introduce one.
+**JavaScript:** Shared layout loads `web_ui_app/static/web_ui_app/js/user-menu.js` (deferred, authenticated users only) to toggle the account dropdown and the **Settings** nested menu. Add more scripts under `web_ui_app/static/web_ui_app/js/` and reference them from `block extra_head` or an optional `block extra_scripts` if you introduce one.
 
 `STATIC_ROOT` is the project-level `staticfiles/` directory (gitignored). **Every fresh clone** should run `python manage.py collectstatic --noinput` during setup so that directory exists; otherwise deployments (or any server that reads from `STATIC_ROOT`) will miss admin and portal static files. For production, serve that output behind your reverse proxy or object storage per [Django’s static files deployment guide](https://docs.djangoproject.com/en/stable/howto/static-files/deployment/).
 
