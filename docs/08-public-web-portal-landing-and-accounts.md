@@ -29,7 +29,7 @@ This layer is distinct from **device / merchant token** authentication used by P
 
 ### Django Admin vs portal password change
 
-**End users** change their own password through the **portal** URLs above (`views.password_change` / `views.password_change_done` in `web_ui_app/views.py`, form `GatePasswordChangeForm` in `web_ui_app/forms.py`, templates `web_ui_app/password_change.html` and `password_change_done.html` extending `portal_base.html` → `base.html`). After a successful change, `update_session_auth_hash` keeps the browser session valid.
+**End users** change their own password through the **portal** URLs above (`views.password_change` / `views.password_change_done` in `web_ui_app/views/password_change.py` and `web_ui_app/views/password_change_done.py`, re-exported from `web_ui_app/views/__init__.py`; form `GatePasswordChangeForm` in `web_ui_app/forms.py`; templates `web_ui_app/password_change.html` and `password_change_done.html` extending `portal_base.html` → `base.html`). After a successful change, `update_session_auth_hash` keeps the browser session valid.
 
 **Django Admin** (`/admin/`) remains appropriate for **staff** managing model data; it is not positioned as the main UX for hub users updating their login password.
 

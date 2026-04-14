@@ -65,7 +65,7 @@ Removing the **last** owner tag is **blocked** in the UI and views: the company 
 
 - Models: `web_ui_app/models.py` (`Company`, `CompanyMembership`, …).
 - Rules and deletion completion: `web_ui_app/company_permissions.py`.
-- Views: `web_ui_app/company_views.py`, URLs in `web_ui_app/urls.py`.
+- Views: `web_ui_app/views/company_*.py` (one view module per route) and shared helpers in `web_ui_app/views/company_helpers.py`; URLs in `web_ui_app/urls.py` import the `views` package (`web_ui_app/views/__init__.py`).
 - Layout: `web_ui_app/templates/web_ui_app/portal_base.html`, `web_ui_app/templates/web_ui_app/_portal_nav.html`, styles in `web_ui_app/static/web_ui_app/css/base.css`.
 
 ## Related documents

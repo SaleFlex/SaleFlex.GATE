@@ -96,7 +96,7 @@ SaleFlex.GATE/
 │   ├── admin.py
 │   ├── apps.py
 │   ├── models.py             # UserProfile; portal Company, membership, join & deletion flows
-│   ├── views.py
+│   ├── views/                # One module per portal view (landing, accounts, companies); see __init__.py
 │   └── tests.py
 │
 └── docs/                     # Architecture drafts (English)
