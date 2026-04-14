@@ -44,7 +44,7 @@ In `gate_project/settings.py`:
 
 ## Static assets, styles, and icons
 
-Portal **CSS** is kept out of inline `<style>` blocks: shared rules live in `web_ui_app/static/web_ui_app/css/base.css` and are loaded from `web_ui_app/templates/web_ui_app/base.html` using Django’s `{% static %}` tag.
+Portal **CSS** is kept out of inline `<style>` blocks: shared rules live in `web_ui_app/static/web_ui_app/css/base.css` and are loaded from `web_ui_app/templates/web_ui_app/base.html` using Django’s `static` tag.
 
 **Favicons and touch icons:** `web_ui_app/static/web_ui_app/icons/favicon.svg` is wired as the primary `rel="icon"` (SVG, modern browsers) and as `apple-touch-icon`. Replace or extend this file (for example with PNG sizes) if you need broader legacy support.
 
