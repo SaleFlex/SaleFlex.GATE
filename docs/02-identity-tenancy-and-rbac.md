@@ -37,6 +37,15 @@ Exact role names are implementation details; conceptually:
 
 **Separation:** GATE may distinguish **hub users** (web/mobile management) from **cashier identities** that exist primarily on the POS database but can be linked for auditing when required.
 
+### Portal implementation: owner tag vs administrator (`web_ui_app`)
+
+The session portal now models two flags on **company membership** (see [09-portal-companies-ownership-and-deletion.md](09-portal-companies-ownership-and-deletion.md)):
+
+- **Owner tag** — marks **ownership** of the portal company. It is **not** removable by other users (including co-owners). Only the **same account** may remove its own owner tag, and only while **another owner** exists. Owners may **assign** the tag to others. **Company deletion** is an **owner-only** flow; with **multiple owners**, **every current owner** must **approve** deletion before the company is removed.
+- **Administrator** — **full portal management** except deleting the company and changing **owner tags** on others. Administrators approve join requests and may grant or revoke **administrator** on peers (one administrator cannot revoke **their own** admin flag without another admin or an owner).
+
+Creating a company makes the creator **both** owner and administrator. This is the first slice of **user ↔ company** wiring; REST APIs and linkage to `pos_api_app.Merchant` remain future work.
+
 ## Authentication for APIs
 
 - **User JWT** — mobile apps and SPA-style clients after login.  

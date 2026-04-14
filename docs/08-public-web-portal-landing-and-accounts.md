@@ -6,7 +6,7 @@ The **`web_ui_app`** Django app provides a **browser-facing** entry point alongs
 
 - **Landing** — Project overview and calls to action for visitors who are **not** signed in.
 - **Session-based accounts** — Register, log in, log out, and change password using Django’s built-in user model and session authentication.
-- **Signed-in chrome** — The shared layout shows a **Dashboard** shortcut plus an **account control**: a **profile avatar** (uploaded picture or a built-in default SVG) that opens a **dropdown menu** with **Profile**, **Settings** (nested **Change password**), and **Log out**, implemented with lightweight JavaScript for open/close and the nested Settings section.
+- **Signed-in chrome** — Authenticated pages use a **left sidebar** (**portal** navigation) for **Dashboard**, **Companies** (list, create, request to join), **Profile**, and **Change password**, plus **Coming soon** placeholders for stores, catalog, reports, integrations, and API keys. The header still shows a **Dashboard** shortcut and an **account control**: a **profile avatar** (uploaded picture or a built-in default SVG) that opens a **dropdown menu** with **Profile**, **Settings** (nested **Change password**), and **Log out**, implemented with lightweight JavaScript for open/close and the nested Settings section.
 
 This layer is distinct from **device / merchant token** authentication used by POS clients (see [04-rest-api-conventions.md](04-rest-api-conventions.md)).
 
@@ -21,10 +21,15 @@ This layer is distinct from **device / merchant token** authentication used by P
 | `/accounts/login/` | Public | Username / password sign-in. |
 | `/accounts/logout/` | POST (CSRF-protected) | Ends the session; redirects to `/`. |
 | `/accounts/password/change/` | Authenticated | Change password; confirmation at `/accounts/password/change/done/`. Linked from **Settings** in the account dropdown. |
+| `/accounts/password/change/done/` | Authenticated | Confirmation after a successful password change. |
+| `/companies/` | Authenticated | List companies the user belongs to (owner / administrator / member tags). |
+| `/companies/create/` | Authenticated | Create a portal company; creator becomes **owner** and **administrator**. |
+| `/companies/join/` | Authenticated | Submit a join request using a company **slug**; owners or administrators approve. |
+| `/companies/<slug>/` | Authenticated (member only) | Company detail: members, roles, join queue, owner assignment, deletion approvals. |
 
 ### Django Admin vs portal password change
 
-**End users** change their own password through the **portal** URLs above (`views.password_change` / `views.password_change_done` in `web_ui_app/views.py`, form `GatePasswordChangeForm` in `web_ui_app/forms.py`, templates `web_ui_app/password_change.html` and `password_change_done.html` extending `base.html`). After a successful change, `update_session_auth_hash` keeps the browser session valid.
+**End users** change their own password through the **portal** URLs above (`views.password_change` / `views.password_change_done` in `web_ui_app/views.py`, form `GatePasswordChangeForm` in `web_ui_app/forms.py`, templates `web_ui_app/password_change.html` and `password_change_done.html` extending `portal_base.html` → `base.html`). After a successful change, `update_session_auth_hash` keeps the browser session valid.
 
 **Django Admin** (`/admin/`) remains appropriate for **staff** managing model data; it is not positioned as the main UX for hub users updating their login password.
 
@@ -49,8 +54,9 @@ Portal **CSS** is kept out of inline `<style>` blocks: shared rules live in `web
 
 ## Relation to identity and tenancy
 
-Registration creates a **hub user account** only. **Company creation, invitations, and RBAC** are described in [02-identity-tenancy-and-rbac.md](02-identity-tenancy-and-rbac.md) and are not fully wired in this first portal slice; future work will connect users to companies and roles.
+Registration creates a **hub user account**. **Portal companies**, **join requests**, and the **owner tag / administrator** model are implemented in `web_ui_app` (see [09-portal-companies-ownership-and-deletion.md](09-portal-companies-ownership-and-deletion.md)). Broader ecosystem tenancy and device RBAC remain described in [02-identity-tenancy-and-rbac.md](02-identity-tenancy-and-rbac.md); REST exposure and mapping to `pos_api_app.Merchant` are follow-on work.
 
 ## Related documents
 
-- [07-web-ui-erp-and-reporting.md](07-web-ui-erp-and-reporting.md) — Broader web UI and reporting roadmap.
+- [07-web-ui-erp-and-reporting.md](07-web-ui-erp-and-reporting.md) — Broader web UI and reporting roadmap.  
+- [09-portal-companies-ownership-and-deletion.md](09-portal-companies-ownership-and-deletion.md) — Portal companies, owner tag, administrators, deletion approvals.

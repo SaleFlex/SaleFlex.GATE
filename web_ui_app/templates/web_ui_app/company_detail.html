@@ -1,0 +1,133 @@
+{% extends "web_ui_app/portal_base.html" %}
+
+{% block title %}{{ company.name }} — SaleFlex.GATE{% endblock %}
+
+{% block portal_content %}
+<div class="card">
+    <h1>{{ company.name }}</h1>
+    <p class="lead lead-tight">
+        Slug: <code class="slug-code">{{ company.slug }}</code>
+        <span class="tag-row tag-row--inline">
+            {% if m_self.is_owner %}<span class="tag tag--owner">Owner</span>{% endif %}
+            {% if m_self.is_admin %}<span class="tag tag--admin">Administrator</span>{% endif %}
+            {% if not m_self.is_owner and not m_self.is_admin %}<span class="tag tag--member">Member</span>{% endif %}
+        </span>
+    </p>
+
+    {% if deletion_request %}
+        <div class="banner banner--warning" role="status">
+            <strong>Deletion pending.</strong>
+            Every owner must approve before this company is removed.
+            Recorded approvals: {{ deletion_approved_count }} of {{ owner_total }}.
+        </div>
+        {% if m_self.is_owner and user.id not in deletion_approved_ids %}
+            <form method="post" action="{% url 'company_delete_approve' slug=company.slug %}" class="form-inline-block">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">Approve deletion</button>
+            </form>
+        {% endif %}
+    {% elif m_self.is_owner %}
+        <form method="post" action="{% url 'company_delete_initiate' slug=company.slug %}" class="form-inline-block danger-zone">
+            {% csrf_token %}
+            <button type="submit" class="btn">Start company deletion…</button>
+            <span class="helptext">If there are several owners, each must approve. With a single owner, deletion runs after you confirm.</span>
+        </form>
+    {% endif %}
+
+    <h2>Members</h2>
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Roles</th>
+                    {% if m_self.is_owner or m_self.is_admin %}<th>Actions</th>{% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for mem in members %}
+                    <tr>
+                        <td>{{ mem.user.username }}{% if mem.user_id == user.id %} <span class="muted">(you)</span>{% endif %}</td>
+                        <td>
+                            <span class="tag-row">
+                                {% if mem.is_owner %}<span class="tag tag--owner">Owner</span>{% endif %}
+                                {% if mem.is_admin %}<span class="tag tag--admin">Administrator</span>{% endif %}
+                                {% if not mem.is_owner and not mem.is_admin %}<span class="tag tag--member">Member</span>{% endif %}
+                            </span>
+                        </td>
+                        {% if m_self.is_owner or m_self.is_admin %}
+                            <td class="actions-cell">
+                                {% if m_self.is_owner or m_self.is_admin %}
+                                    {% if not mem.is_admin and not mem.is_owner %}
+                                        <form method="post" action="{% url 'company_grant_admin' slug=company.slug user_id=mem.user_id %}" class="form-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-small">Grant administrator</button>
+                                        </form>
+                                    {% endif %}
+                                {% endif %}
+                                {% if mem.is_admin and not mem.is_owner %}
+                                    {% if m_self.is_owner or m_self.is_admin and mem.user_id != user.id %}
+                                        <form method="post" action="{% url 'company_revoke_admin' slug=company.slug user_id=mem.user_id %}" class="form-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-small">Revoke administrator</button>
+                                        </form>
+                                    {% endif %}
+                                {% endif %}
+                                {% if mem.user_id == user.id and mem.is_owner and owner_total >= 2 %}
+                                    <form method="post" action="{% url 'company_self_remove_owner' slug=company.slug %}" class="form-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-small">Remove my ownership tag</button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <p class="helptext">The ownership tag is separate from administrator: only you can drop your own owner tag, and only if another owner exists. Administrators cannot remove owner tags or delete the company alone.</p>
+
+    {% if m_self.is_owner and grant_owner_form %}
+        <h2>Assign ownership tag</h2>
+        <p class="lead lead-tight">Adds the ownership tag to an existing member (or creates membership). Other owners cannot remove someone else’s ownership tag.</p>
+        <form method="post" action="{% url 'company_grant_owner' slug=company.slug %}" class="grant-owner-form">
+            {% csrf_token %}
+            <div class="form-row form-row--inline">
+                <label for="id_username">{{ grant_owner_form.username.label }}</label>
+                {{ grant_owner_form.username }}
+                {{ grant_owner_form.username.errors }}
+            </div>
+            <button type="submit" class="btn btn-primary">Assign owner</button>
+        </form>
+    {% endif %}
+
+    {% if pending_joins %}
+        <h2>Join requests</h2>
+        <ul class="join-request-list">
+            {% for jr in pending_joins %}
+                <li class="join-request-list__item">
+                    <div>
+                        <strong>{{ jr.user.username }}</strong>
+                        {% if jr.message %}<p class="muted">{{ jr.message }}</p>{% endif %}
+                    </div>
+                    <div class="join-request-list__actions">
+                        <form method="post" action="{% url 'company_join_approve' slug=company.slug pk=jr.pk %}" class="form-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary btn-small">Approve</button>
+                        </form>
+                        <form method="post" action="{% url 'company_join_reject' slug=company.slug pk=jr.pk %}" class="form-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-small">Reject</button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <p class="portal-actions">
+        <a class="btn" href="{% url 'company_list' %}">All companies</a>
+    </p>
+</div>
+{% endblock %}

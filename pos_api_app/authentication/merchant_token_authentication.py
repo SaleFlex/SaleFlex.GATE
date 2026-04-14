@@ -22,11 +22,14 @@
 
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
-from pos_api_app.models.merchant_api_token import MerchantAPIToken
 
 
 class MerchantTokenAuthentication(BaseAuthentication):
     def authenticate(self, request):
+        # Deferred import: ``MerchantAPIToken`` references ``Merchant`` and related
+        # models that are not registered until those submodules are imported.
+        from pos_api_app.models.merchant_api_token import MerchantAPIToken
+
         # Expect the token in the Authorization header
         auth_header = request.headers.get('Authorization')
         if not auth_header:

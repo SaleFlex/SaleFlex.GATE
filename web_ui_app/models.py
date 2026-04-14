@@ -47,3 +47,127 @@ class UserProfile(models.Model):
 
     def __str__(self) -> str:
         return f"Profile for {self.user_id}"
+
+
+class Company(models.Model):
+    """Portal tenant (hub company). Distinct from pos_api_app.Merchant until linked."""
+
+    name = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=96, unique=True, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class CompanyMembership(models.Model):
+    company = models.ForeignKey(
+        Company,
+        on_delete=models.CASCADE,
+        related_name="memberships",
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="company_memberships",
+    )
+    is_owner = models.BooleanField(
+        default=False,
+        help_text="Ownership tag: not removable by others; assignable only by an owner.",
+    )
+    is_admin = models.BooleanField(
+        default=False,
+        help_text="Company administrator: full portal operations except company delete and owner-tag changes on others.",
+    )
+    joined_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=("company", "user"),
+                name="uniq_web_ui_company_membership_user",
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.user_id} @ {self.company_id}"
+
+
+class CompanyJoinRequest(models.Model):
+    class Status(models.TextChoices):
+        PENDING = "pending", "Pending"
+        APPROVED = "approved", "Approved"
+        REJECTED = "rejected", "Rejected"
+
+    company = models.ForeignKey(
+        Company,
+        on_delete=models.CASCADE,
+        related_name="join_requests",
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="company_join_requests",
+    )
+    message = models.CharField(max_length=500, blank=True)
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.PENDING,
+        db_index=True,
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    resolved_at = models.DateTimeField(null=True, blank=True)
+    resolved_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="resolved_company_join_requests",
+    )
+
+    class Meta:
+        ordering = ("-created_at",)
+
+
+class CompanyDeletionRequest(models.Model):
+    """When all current owners have approved, the company is deleted."""
+
+    company = models.ForeignKey(
+        Company,
+        on_delete=models.CASCADE,
+        related_name="deletion_requests",
+    )
+    requested_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="initiated_company_deletions",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ("-created_at",)
+
+
+class CompanyDeletionApproval(models.Model):
+    deletion_request = models.ForeignKey(
+        CompanyDeletionRequest,
+        on_delete=models.CASCADE,
+        related_name="approvals",
+    )
+    owner_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="company_deletion_approvals",
+    )
+    approved_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=("deletion_request", "owner_user"),
+                name="uniq_deletion_approval_owner",
+            ),
+        ]

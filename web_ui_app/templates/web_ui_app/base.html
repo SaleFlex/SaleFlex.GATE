@@ -10,8 +10,8 @@
     <link rel="stylesheet" href="{% static 'web_ui_app/css/base.css' %}">
     {% block extra_head %}{% endblock %}
 </head>
-<body>
-    <div class="shell">
+<body class="{% block body_class %}{% endblock %}">
+    <div class="shell {% block shell_class %}{% endblock %}">
         <header class="site">
             <a class="brand" href="{% url 'landing' %}">SaleFlex.GATE</a>
             <nav class="nav-actions">

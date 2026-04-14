@@ -116,3 +116,52 @@ class GateUserAvatarForm(forms.ModelForm):
         f.required = False
         f.label = "Profile picture"
         f.widget = AtomicFileInput(attrs={**f.widget.attrs})
+
+
+class CompanyCreateForm(forms.Form):
+    name = forms.CharField(
+        max_length=200,
+        label="Company name",
+        widget=AtomicTextInput(attrs={"autocomplete": "organization"}),
+    )
+
+    def clean_name(self) -> str:
+        n = (self.cleaned_data.get("name") or "").strip()
+        if not n:
+            raise forms.ValidationError("Enter a company name.")
+        return n
+
+
+class CompanyJoinForm(forms.Form):
+    slug = forms.CharField(
+        max_length=96,
+        label="Company slug",
+        help_text="Ask an owner or administrator for the company slug shown on the company page.",
+        widget=AtomicTextInput(attrs={"autocomplete": "off"}),
+    )
+    message = forms.CharField(
+        required=False,
+        max_length=500,
+        label="Message (optional)",
+        widget=forms.Textarea(attrs={"rows": 3}),
+    )
+
+    def clean_slug(self) -> str:
+        s = (self.cleaned_data.get("slug") or "").strip()
+        if not s:
+            raise forms.ValidationError("Enter the company slug.")
+        return s
+
+
+class GrantOwnerForm(forms.Form):
+    username = forms.CharField(
+        max_length=150,
+        label="Username",
+        widget=AtomicTextInput(attrs={"autocomplete": "username"}),
+    )
+
+    def clean_username(self) -> str:
+        s = (self.cleaned_data.get("username") or "").strip()
+        if not s:
+            raise forms.ValidationError("Enter a username.")
+        return s

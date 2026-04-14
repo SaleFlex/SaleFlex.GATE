@@ -14,7 +14,7 @@ It is the primary integration point for **[SaleFlex.PyPOS](https://github.com/Sa
 - **Django REST Framework** — Versioned JSON APIs for devices (PyPOS, KITCHEN) and mobile clients; merchant token authentication (see `pos_api_app.authentication`).
 - **POS-aligned domain models** — Merchant, store, POS, closure, warehouse, customer, and related reference entities under `pos_api_app` (evolving toward full sync with PyPOS payloads).
 - **Django Admin** — Built-in staff site for direct ORM/data management (`/admin/`). It is not the primary place for end-user account tasks.
-- **Web UI & public portal** — `web_ui_app` provides a landing page (guests), session login/register/logout, **portal-only** change password (`/accounts/password/change/`, templates under `web_ui_app/templates/web_ui_app/`), a signed-in dashboard stub, an account menu (avatar with default placeholder, profile edit, settings submenu with change password), and optional profile picture uploads; ERP-style screens will extend this.
+- **Web UI & public portal** — `web_ui_app` provides a landing page (guests), session login/register/logout, **portal-only** change password (`/accounts/password/change/`, templates under `web_ui_app/templates/web_ui_app/`), a signed-in **left sidebar** (dashboard, **companies**, profile, password, plus “coming soon” placeholders), **company creation** and **join-by-slug requests** with **owner tag** vs **administrator** rules, multi-owner **deletion approvals**, a dashboard stub, an account menu (avatar with default placeholder, profile edit, settings submenu with change password), and optional profile picture uploads; ERP-style screens will extend this.
 - **Integration gateway** — Designed to front ERP, loyalty, campaign, and payment adapters so edge apps stay thin.
 - **Reporting & back office (roadmap)** — Aggregated sales, stock, and KPIs via web UI and APIs.
 - **Open source** — Extend and deploy for your own infrastructure.
@@ -95,7 +95,7 @@ SaleFlex.GATE/
 │   ├── templates/            # Landing, login/register, profile, password_change (portal chrome)
 │   ├── admin.py
 │   ├── apps.py
-│   ├── models.py             # UserProfile (optional avatar file)
+│   ├── models.py             # UserProfile; portal Company, membership, join & deletion flows
 │   ├── views.py
 │   └── tests.py
 │
@@ -258,6 +258,8 @@ Open **Django Admin**: [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admi
 
 This hierarchy is the basis for **authorization**, **data partitioning**, and **API scoping** (JWT / API keys bound to company, store, and device).
 
+The **session portal** now persists companies and membership in `web_ui_app` (**owner tag**, **administrator**, join-by-slug, multi-owner deletion). Details: [docs/09-portal-companies-ownership-and-deletion.md](docs/09-portal-companies-ownership-and-deletion.md). Mapping to `pos_api_app.Merchant` and device APIs is still to be aligned.
+
 ---
 
 ## REST API and clients
@@ -314,6 +316,7 @@ Beyond REST consumers, GATE ships (or will ship) **Django-based web interfaces**
 | [docs/06-third-party-integrations.md](docs/06-third-party-integrations.md) | ERP, loyalty, campaign, payment. |
 | [docs/07-web-ui-erp-and-reporting.md](docs/07-web-ui-erp-and-reporting.md) | Django UI and reporting scope. |
 | [docs/08-public-web-portal-landing-and-accounts.md](docs/08-public-web-portal-landing-and-accounts.md) | Landing page and session account URLs (`web_ui_app`). |
+| [docs/09-portal-companies-ownership-and-deletion.md](docs/09-portal-companies-ownership-and-deletion.md) | Portal companies, owner tag vs administrator, join requests, deletion approvals. |
 
 ---
 
@@ -327,7 +330,7 @@ Beyond REST consumers, GATE ships (or will ship) **Django-based web interfaces**
 
 ### Data model & tenancy
 
-- [ ] First-class **user ↔ company** membership and invitation flow aligned with admin-approved join  
+- [x] First-class **user ↔ company** membership and **admin-approved join** (portal: `web_ui_app` companies + join requests; REST/Merchant linkage pending)  
 - [ ] RBAC roles scoped by company and store  
 - [ ] Terminal/device registry linked to **PyPOS** / **KITCHEN** identities and sync policy  
 
@@ -341,7 +344,7 @@ Beyond REST consumers, GATE ships (or will ship) **Django-based web interfaces**
 ### Web & mobile consumers
 
 - [ ] Multi-store and multi-terminal management in web UI  
-- [x] Register `web_ui_app` — landing, session register/login/logout, portal password change (not Django Admin), dashboard stub  
+- [x] Register `web_ui_app` — landing, session register/login/logout, portal password change (not Django Admin), dashboard stub, **sidebar portal nav**, **companies** (create, join requests, owner/admin rules, multi-owner delete)  
 - [ ] ERP-style operational screens beyond the portal stub  
 - [ ] Mobile-oriented endpoints: management dashboards, stocktake sessions, waiter/order flows  
 

@@ -1,13 +1,13 @@
-{% extends "web_ui_app/base.html" %}
+{% extends "web_ui_app/portal_base.html" %}
 
 {% block title %}Dashboard — SaleFlex.GATE{% endblock %}
 
-{% block content %}
+{% block portal_content %}
 <div class="card">
     <h1>Welcome, {{ user.username }}</h1>
     <p class="lead">
         You are signed in. Operational ERP-style screens and reporting will appear here as the web layer grows.
-        Use <strong>Change password</strong> in the header to update your credentials.
+        Use the <strong>portal menu</strong> for companies, profile, and password.
         {% if user.is_staff %}
             You may also open <a href="{% url 'admin:index' %}">Django Admin</a>.
         {% endif %}

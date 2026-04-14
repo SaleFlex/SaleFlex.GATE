@@ -22,10 +22,49 @@
 
 from django.contrib import admin
 
-from .models import UserProfile
+from .models import (
+    Company,
+    CompanyDeletionApproval,
+    CompanyDeletionRequest,
+    CompanyJoinRequest,
+    CompanyMembership,
+    UserProfile,
+)
 
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
     list_display = ("user", "avatar")
     search_fields = ("user__username", "user__email")
+
+
+@admin.register(Company)
+class CompanyAdmin(admin.ModelAdmin):
+    list_display = ("name", "slug", "created_at")
+    search_fields = ("name", "slug")
+    prepopulated_fields = {"slug": ("name",)}
+
+
+@admin.register(CompanyMembership)
+class CompanyMembershipAdmin(admin.ModelAdmin):
+    list_display = ("company", "user", "is_owner", "is_admin", "joined_at")
+    list_filter = ("is_owner", "is_admin")
+    search_fields = ("company__name", "company__slug", "user__username")
+
+
+@admin.register(CompanyJoinRequest)
+class CompanyJoinRequestAdmin(admin.ModelAdmin):
+    list_display = ("company", "user", "status", "created_at")
+    list_filter = ("status",)
+    search_fields = ("company__slug", "user__username")
+
+
+class CompanyDeletionApprovalInline(admin.TabularInline):
+    model = CompanyDeletionApproval
+    extra = 0
+
+
+@admin.register(CompanyDeletionRequest)
+class CompanyDeletionRequestAdmin(admin.ModelAdmin):
+    list_display = ("company", "requested_by", "created_at", "completed_at")
+    inlines = (CompanyDeletionApprovalInline,)

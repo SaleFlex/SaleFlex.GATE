@@ -1,0 +1,25 @@
+{% extends "web_ui_app/portal_base.html" %}
+
+{% block title %}Request to join — SaleFlex.GATE{% endblock %}
+
+{% block portal_content %}
+<div class="card card-narrow">
+    <h1>Request to join a company</h1>
+    <p class="lead lead-tight">An <strong>owner</strong> or <strong>administrator</strong> must approve your request before you become a member.</p>
+    <form method="post" action="">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="form-row">
+                <label for="{{ field.id_for_label }}">{{ field.label }}{{ form.label_suffix }}</label>
+                {{ field.as_widget }}
+                {% if field.help_text %}<div class="helptext">{{ field.help_text|safe }}</div>{% endif %}
+                {{ field.errors }}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary btn-block">Submit request</button>
+    </form>
+    <div class="auth-actions">
+        <a href="{% url 'company_list' %}">Back to companies</a>
+    </div>
+</div>
+{% endblock %}

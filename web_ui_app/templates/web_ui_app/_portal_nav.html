@@ -1,0 +1,38 @@
+{% with url_name=request.resolver_match.url_name %}
+<aside class="portal-sidebar" aria-label="Portal navigation">
+    <nav class="portal-nav">
+        <p class="portal-nav__title">Portal</p>
+        <ul class="portal-nav__list">
+            <li>
+                <a href="{% url 'dashboard' %}" class="portal-nav__link{% if url_name == 'dashboard' %} is-active{% endif %}">Dashboard</a>
+            </li>
+            <li>
+                <a href="{% url 'company_list' %}" class="portal-nav__link{% if url_name == 'company_list' or url_name == 'company_detail' or url_name == 'company_create' or url_name == 'company_join' %} is-active{% endif %}">Companies</a>
+            </li>
+            <li class="portal-nav__sub">
+                <a href="{% url 'company_create' %}" class="portal-nav__sublink{% if url_name == 'company_create' %} is-active{% endif %}">New company</a>
+            </li>
+            <li class="portal-nav__sub">
+                <a href="{% url 'company_join' %}" class="portal-nav__sublink{% if url_name == 'company_join' %} is-active{% endif %}">Request to join</a>
+            </li>
+        </ul>
+        <p class="portal-nav__title portal-nav__title--spaced">Account</p>
+        <ul class="portal-nav__list">
+            <li>
+                <a href="{% url 'profile_edit' %}" class="portal-nav__link{% if url_name == 'profile_edit' %} is-active{% endif %}">Profile</a>
+            </li>
+            <li>
+                <a href="{% url 'password_change' %}" class="portal-nav__link{% if url_name == 'password_change' or url_name == 'password_change_done' %} is-active{% endif %}">Change password</a>
+            </li>
+        </ul>
+        <p class="portal-nav__title portal-nav__title--spaced">Coming soon</p>
+        <ul class="portal-nav__list portal-nav__list--muted">
+            <li><span class="portal-nav__disabled">Stores &amp; terminals</span></li>
+            <li><span class="portal-nav__disabled">Products &amp; pricing</span></li>
+            <li><span class="portal-nav__disabled">Reports</span></li>
+            <li><span class="portal-nav__disabled">Integrations</span></li>
+            <li><span class="portal-nav__disabled">API keys</span></li>
+        </ul>
+    </nav>
+</aside>
+{% endwith %}

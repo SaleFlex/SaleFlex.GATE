@@ -1,0 +1,13 @@
+{% extends "web_ui_app/base.html" %}
+
+{% block shell_class %}shell--portal{% endblock %}
+{% block body_class %}portal-body{% endblock %}
+
+{% block content %}
+<div class="portal-layout">
+    {% include "web_ui_app/_portal_nav.html" %}
+    <div class="portal-main">
+        {% block portal_content %}{% endblock %}
+    </div>
+</div>
+{% endblock %}

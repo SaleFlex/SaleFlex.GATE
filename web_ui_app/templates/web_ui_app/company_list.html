@@ -1,0 +1,31 @@
+{% extends "web_ui_app/portal_base.html" %}
+
+{% block title %}Companies — SaleFlex.GATE{% endblock %}
+
+{% block portal_content %}
+<div class="card">
+    <h1>Your companies</h1>
+    <p class="lead">Companies you created or joined. Open one to manage members, join requests, and ownership.</p>
+    {% if memberships %}
+        <ul class="company-list">
+            {% for m in memberships %}
+                <li class="company-list__item">
+                    <a class="company-list__link" href="{% url 'company_detail' slug=m.company.slug %}">{{ m.company.name }}</a>
+                    <span class="company-list__slug" title="Share this slug for join requests">{{ m.company.slug }}</span>
+                    <span class="tag-row">
+                        {% if m.is_owner %}<span class="tag tag--owner">Owner</span>{% endif %}
+                        {% if m.is_admin %}<span class="tag tag--admin">Administrator</span>{% endif %}
+                        {% if not m.is_owner and not m.is_admin %}<span class="tag tag--member">Member</span>{% endif %}
+                    </span>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="lead">You are not in any company yet.</p>
+    {% endif %}
+    <p class="portal-actions">
+        <a class="btn btn-primary" href="{% url 'company_create' %}">Create a company</a>
+        <a class="btn" href="{% url 'company_join' %}">Request to join</a>
+    </p>
+</div>
+{% endblock %}

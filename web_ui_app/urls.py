@@ -23,7 +23,7 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path
 
-from . import views
+from . import company_views, views
 from .forms import GateAuthenticationForm
 
 urlpatterns = [
@@ -53,5 +53,49 @@ urlpatterns = [
         "accounts/password/change/done/",
         views.password_change_done,
         name="password_change_done",
+    ),
+    path("companies/", company_views.company_list, name="company_list"),
+    path("companies/create/", company_views.company_create, name="company_create"),
+    path("companies/join/", company_views.company_join, name="company_join"),
+    path("companies/<slug:slug>/", company_views.company_detail, name="company_detail"),
+    path(
+        "companies/<slug:slug>/join/<int:pk>/approve/",
+        company_views.company_join_approve,
+        name="company_join_approve",
+    ),
+    path(
+        "companies/<slug:slug>/join/<int:pk>/reject/",
+        company_views.company_join_reject,
+        name="company_join_reject",
+    ),
+    path(
+        "companies/<slug:slug>/members/<int:user_id>/grant-admin/",
+        company_views.company_grant_admin,
+        name="company_grant_admin",
+    ),
+    path(
+        "companies/<slug:slug>/members/<int:user_id>/revoke-admin/",
+        company_views.company_revoke_admin,
+        name="company_revoke_admin",
+    ),
+    path(
+        "companies/<slug:slug>/owners/grant/",
+        company_views.company_grant_owner,
+        name="company_grant_owner",
+    ),
+    path(
+        "companies/<slug:slug>/owners/self-remove/",
+        company_views.company_self_remove_owner,
+        name="company_self_remove_owner",
+    ),
+    path(
+        "companies/<slug:slug>/delete/initiate/",
+        company_views.company_delete_initiate,
+        name="company_delete_initiate",
+    ),
+    path(
+        "companies/<slug:slug>/delete/approve/",
+        company_views.company_delete_approve,
+        name="company_delete_approve",
     ),
 ]
