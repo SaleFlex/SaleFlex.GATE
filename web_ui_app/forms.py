@@ -33,6 +33,7 @@ from .widgets import (
     AtomicEmailInput,
     AtomicFileInput,
     AtomicPasswordInput,
+    AtomicTextarea,
     AtomicTextInput,
 )
 
@@ -143,7 +144,7 @@ class CompanyJoinForm(forms.Form):
         required=False,
         max_length=500,
         label="Message (optional)",
-        widget=forms.Textarea(attrs={"rows": 3}),
+        widget=AtomicTextarea(attrs={"rows": 3}),
     )
 
     def clean_slug(self) -> str:

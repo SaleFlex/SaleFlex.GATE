@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 from django.forms.utils import flatatt
-from django.forms.widgets import EmailInput, FileInput, PasswordInput, TextInput
+from django.forms.widgets import EmailInput, FileInput, PasswordInput, Textarea, TextInput
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
@@ -44,6 +44,17 @@ class _AtomicInputMixin:
 
 class AtomicTextInput(_AtomicInputMixin, TextInput):
     pass
+
+
+class AtomicTextarea(Textarea):
+    """Same rationale as _AtomicInputMixin: single format_html for <textarea>."""
+
+    def render(self, name, value, attrs=None, renderer=None):
+        context = self.get_context(name, value, attrs)
+        w = context["widget"]
+        attrs_dict = {**w["attrs"], "name": w["name"]}
+        val = w["value"] if w["value"] is not None else ""
+        return format_html("<textarea{}>{}</textarea>", mark_safe(flatatt(attrs_dict)), val)
 
 
 class AtomicPasswordInput(_AtomicInputMixin, PasswordInput):
