@@ -29,8 +29,7 @@
 
     if (!trigger || !panel) return;
 
-    trigger.addEventListener("click", function (e) {
-      e.stopPropagation();
+    trigger.addEventListener("click", function () {
       var open = trigger.getAttribute("aria-expanded") === "true";
       document.querySelectorAll("[data-user-menu]").forEach(function (other) {
         if (other !== root) closeMenu(other);
@@ -45,20 +44,19 @@
     if (subToggle && sub) {
       subToggle.addEventListener("click", function (e) {
         e.preventDefault();
-        e.stopPropagation();
         var expanded = subToggle.getAttribute("aria-expanded") === "true";
         sub.hidden = expanded;
         subToggle.setAttribute("aria-expanded", expanded ? "false" : "true");
       });
     }
-
-    panel.addEventListener("click", function (e) {
-      e.stopPropagation();
-    });
   });
 
-  document.addEventListener("click", function () {
-    document.querySelectorAll("[data-user-menu]").forEach(closeMenu);
+  document.addEventListener("click", function (e) {
+    document.querySelectorAll("[data-user-menu]").forEach(function (root) {
+      if (!root.contains(e.target)) {
+        closeMenu(root);
+      }
+    });
   });
 
   document.addEventListener("keydown", function (e) {

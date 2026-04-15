@@ -88,12 +88,16 @@ header.site .brand:hover { text-decoration: none; color: var(--accent); }
     right: 0;
     top: calc(100% + 0.35rem);
     min-width: 220px;
+    max-width: min(320px, calc(100vw - 2rem));
     padding: 0.35rem 0;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 10px;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
     z-index: 50;
+}
+.user-menu__panel[hidden] {
+    display: none !important;
 }
 .user-menu__username {
     display: block;

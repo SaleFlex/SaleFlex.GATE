@@ -6,7 +6,7 @@ The **`web_ui_app`** Django app provides a **browser-facing** entry point alongs
 
 - **Landing** — Project overview and calls to action for visitors who are **not** signed in.
 - **Session-based accounts** — Register, log in, log out, and change password using Django’s built-in user model and session authentication.
-- **Signed-in chrome** — Authenticated pages use a **left sidebar** (**portal** navigation) for **Dashboard**, **Companies** (list, create, request to join), **Profile**, and **Change password**, plus **Coming soon** placeholders for stores, catalog, reports, integrations, and API keys. The header still shows a **Dashboard** shortcut and an **account control**: a **profile avatar** (uploaded picture or a built-in default SVG) that opens a **dropdown menu** with **Profile**, **Settings** (nested **Change password**), and **Log out**, implemented with lightweight JavaScript for open/close and the nested Settings section.
+- **Signed-in chrome** — Authenticated pages use a **left sidebar** (**portal** navigation) for **Dashboard**, **Companies** (list, create, request to join), **Profile**, and **Change password**, plus **Coming soon** placeholders for stores, catalog, reports, integrations, and API keys. The header shows the **brand** link and an **account control**: a **profile avatar** (uploaded picture or a built-in default SVG) that opens a **dropdown menu** with **Profile**, **Settings** (nested **Change password**), and **Log out**, implemented with lightweight JavaScript for open/close and the nested Settings section.
 
 This layer is distinct from **device / merchant token** authentication used by POS clients (see [04-rest-api-conventions.md](04-rest-api-conventions.md)).
 

@@ -16,7 +16,6 @@
             <a class="brand" href="{% url 'landing' %}">SaleFlex.GATE</a>
             <nav class="nav-actions">
                 {% if user.is_authenticated %}
-                    <a class="btn btn-nav" href="{% url 'dashboard' %}">Dashboard</a>
                     <div class="user-menu" data-user-menu>
                         <button
                             type="button"
