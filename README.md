@@ -223,7 +223,7 @@ Open **Django Admin**: [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admi
 
 ### Web UI static files and icons
 
-- **Styles** — Shared layout and components for the portal live in `web_ui_app/static/web_ui_app/css/base.css` and are linked from `templates/web_ui_app/base.html` via `static`.
+- **Styles** — Shared layout and components for the portal live in `web_ui_app/static/web_ui_app/css/base.css` and are linked from `templates/web_ui_app/base.html` via `static`. Form cards in `<main>` use the full width of the main content (portal column beside the sidebar, or the guest shell content for login/register).
 - **Favicon** — `web_ui_app/static/web_ui_app/icons/favicon.svg` is referenced as `rel="icon"` (SVG) and `apple-touch-icon` for bookmarks and home-screen shortcuts.
 - **JavaScript** — There is no inline script in the current templates; add files under `web_ui_app/static/web_ui_app/js/` and include them from `block extra_head` (or a dedicated `block extra_js` if you introduce one) when a page needs behaviour.
 - **Collected output** — `STATIC_ROOT` is `staticfiles/` at the project root; it is listed in `.gitignore`. After cloning, run `python manage.py collectstatic --noinput` as part of setup (see [Installation & Setup](#installation--setup)).

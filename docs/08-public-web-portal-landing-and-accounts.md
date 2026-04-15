@@ -46,6 +46,8 @@ In `gate_project/settings.py`:
 
 Portal **CSS** is kept out of inline `<style>` blocks: shared rules live in `web_ui_app/static/web_ui_app/css/base.css` and are loaded from `web_ui_app/templates/web_ui_app/base.html` using Django’s `static` tag.
 
+**Form layout:** Templates reuse the `card` / `card-narrow` pattern for auth and portal forms. In `base.css`, any `card-narrow` inside `<main>` stretches to the **full width of the main content area**—for signed-in pages that is the **portal main column** next to the sidebar; for register/login that is the **content width** inside the centered shell (below the header), so forms align with other full-width blocks instead of a fixed narrow column.
+
 **Favicons and touch icons:** `web_ui_app/static/web_ui_app/icons/favicon.svg` is wired as the primary `rel="icon"` (SVG, modern browsers) and as `apple-touch-icon`. Replace or extend this file (for example with PNG sizes) if you need broader legacy support.
 
 **JavaScript:** Shared layout loads `web_ui_app/static/web_ui_app/js/user-menu.js` (deferred, authenticated users only) to toggle the account dropdown and the **Settings** nested menu. Add more scripts under `web_ui_app/static/web_ui_app/js/` and reference them from `block extra_head` or an optional `block extra_scripts` if you introduce one.
