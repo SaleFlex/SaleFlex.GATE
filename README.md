@@ -1,4 +1,11 @@
-> **Under development.** The project is not production-ready yet. APIs and data models described here reflect the **target architecture** aligned with [SaleFlex.PyPOS](https://github.com/SaleFlex/SaleFlex.PyPOS).
+> **Current status:** Alpha v0.1.0a1 - Active Development (The project is not production-ready yet.)
+> 
+> Core POS functionality operational.
+
+![Python 3.13](https://img.shields.io/badge/python-%3E=_3.13-success.svg)
+![Django](https://img.shields.io/badge/Django-6.0.4-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Version](https://img.shields.io/badge/version-0.1.0a1-orange.svg)
 
 # SaleFlex.GATE
 
