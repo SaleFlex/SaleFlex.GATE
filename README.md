@@ -7,6 +7,8 @@
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Version](https://img.shields.io/badge/version-0.1.0a1-orange.svg)
 
+[SaleFlex Ecosystem](https://github.com/SaleFlex) | [SaleFlex.PyPOS](https://github.com/SaleFlex/SaleFlex.PyPOS) | [SaleFlex.OFFICE](https://github.com/SaleFlex/SaleFlex.OFFICE) | **[SaleFlex.GATE](https://github.com/SaleFlex/SaleFlex.GATE)** | [SaleFlex.KITCHEN](https://github.com/SaleFlex/SaleFlex.KITCHEN) | [SaleFlex.POS](https://github.com/SaleFlex/SaleFlex.POS)
+
 # SaleFlex.GATE
 
 **SaleFlex.GATE** is the central **hub** for the SaleFlex ecosystem: a **Django** and **Django REST Framework** backend that ties together stores, terminals, restaurant flows, mobile apps, and optional third-party systems.
