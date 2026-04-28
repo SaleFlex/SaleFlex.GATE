@@ -4,7 +4,7 @@
 
 ![Python 3.13](https://img.shields.io/badge/python-%3E=_3.13-success.svg)
 ![Django](https://img.shields.io/badge/Django-6.0.4-blue.svg)
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![License](https://img.shields.io/badge/license-AGPLv3-blue.svg)
 ![Version](https://img.shields.io/badge/version-0.1.0a1-orange.svg)
 
 [SaleFlex Ecosystem](https://github.com/SaleFlex) | [SaleFlex.PyPOS](https://github.com/SaleFlex/SaleFlex.PyPOS) | [SaleFlex.OFFICE](https://github.com/SaleFlex/SaleFlex.OFFICE) | **[SaleFlex.GATE](https://github.com/SaleFlex/SaleFlex.GATE)** | [SaleFlex.KITCHEN](https://github.com/SaleFlex/SaleFlex.KITCHEN) | [SaleFlex.POS](https://github.com/SaleFlex/SaleFlex.POS)
@@ -371,6 +371,12 @@ Beyond REST consumers, GATE ships (or will ship) **Django-based web interfaces**
 - [SaleFlex.PyPOS](https://github.com/SaleFlex/SaleFlex.PyPOS) — Python/PySide6 POS (GATE integration in `pos/integration/gate/`).  
 - [SaleFlex.KITCHEN](https://github.com/SaleFlex/SaleFlex.KITCHEN) — Kitchen client.  
 - [SaleFlex.POS](https://github.com/SaleFlex/SaleFlex.POS) — Related POS line (ecosystem).  
+
+---
+
+## License
+
+This project is licensed under the GNU Affero General Public License v3.0. See `LICENSE` for details.
 
 ---
 
