@@ -56,6 +56,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
 
+    'core',
     'pos_api_app',
     'web_ui_app',
 ]

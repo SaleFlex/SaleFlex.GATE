@@ -14,4 +14,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from django.contrib import admin
+from django.apps import AppConfig
+
+
+class CoreConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'core'
+    verbose_name = 'SaleFlex Core'

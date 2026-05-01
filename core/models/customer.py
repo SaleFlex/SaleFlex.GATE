@@ -43,7 +43,7 @@ class Customer(models.Model):
     zip_code = models.CharField(max_length=20, blank=True, null=True)
 
     # Foreign key relationships for district, city, and country. Allows for setting geographical hierarchy.
-    district = models.ForeignKey('District', on_delete=models.SET_NULL, null=True, blank=True)
+    district = models.CharField(max_length=100, blank=True, null=True)
     city = models.ForeignKey('City', on_delete=models.SET_NULL, null=True, blank=True)
     country = models.ForeignKey('Country', on_delete=models.SET_NULL, null=True, blank=True)
 

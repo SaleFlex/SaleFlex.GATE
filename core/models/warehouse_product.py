@@ -23,8 +23,8 @@ class WarehouseProduct(models.Model):
     # Associated Warehouse Id (ForeignKey to a Warehouse model)
     warehouse = models.ForeignKey('Warehouse', on_delete=models.CASCADE, related_name='warehouse_products')
 
-    # Product Id (ForeignKey to a Product model)
-    product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='warehouse_products')
+    # Product identifier — placeholder until the Product model is introduced
+    product_code = models.CharField(max_length=255, help_text="Product code; will become a FK to Product when the Product model is added.")
 
     # Current stock quantity in the warehouse
     stock = models.IntegerField()

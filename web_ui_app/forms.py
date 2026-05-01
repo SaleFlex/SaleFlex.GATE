@@ -22,7 +22,7 @@ from django.contrib.auth.forms import (
 )
 from django.contrib.auth.models import User
 
-from .models import Company, UserProfile
+from core.models import Company, GateUser
 from .widgets import (
     AtomicEmailInput,
     AtomicFileInput,
@@ -102,7 +102,7 @@ class GateUserAccountForm(forms.ModelForm):
 
 class GateUserAvatarForm(forms.ModelForm):
     class Meta:
-        model = UserProfile
+        model = GateUser
         fields = ("avatar",)
 
     def __init__(self, *args, **kwargs):

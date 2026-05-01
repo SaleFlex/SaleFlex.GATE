@@ -56,7 +56,7 @@ class Store(models.Model):
     is_active = models.BooleanField(default=True)
 
     # Foreign key to the Contact model, to link one or more contact persons associated with the store
-    contacts = models.ManyToManyField('Contact', related_name='merchants')
+    contacts = models.ManyToManyField('Contact', related_name='stores')
 
     # Foreign key to the User model, represents the user who created this store record
     created_by = models.ForeignKey(User, related_name='store_created', on_delete=models.SET_NULL, null=True, blank=True)

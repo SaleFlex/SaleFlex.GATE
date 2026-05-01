@@ -18,13 +18,14 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
+from core.models import GateUser
+
 from ..forms import GateUserAccountForm, GateUserAvatarForm
-from ..models import UserProfile
 
 
 @login_required
 def profile_edit(request):
-    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+    profile, _ = GateUser.objects.get_or_create(user=request.user)
     if request.method == "POST":
         user_form = GateUserAccountForm(request.POST, instance=request.user)
         avatar_form = GateUserAvatarForm(

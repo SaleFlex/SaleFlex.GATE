@@ -32,13 +32,13 @@ class PosVat(models.Model):
     description = models.CharField(max_length=255)
 
     # Foreign key to POS, optional, allows the form to be related to specific POS devices
-    pos = models.ForeignKey('PointOfSale', on_delete=models.SET_NULL, null=True, blank=True, related_name='forms')
+    pos = models.ForeignKey('PointOfSale', on_delete=models.SET_NULL, null=True, blank=True, related_name='vat_entries')
 
     # Foreign key to Store, optional, allows the form to be sent to all POS devices in a store
-    store = models.ForeignKey('Store', on_delete=models.SET_NULL, null=True, blank=True, related_name='forms')
+    store = models.ForeignKey('Store', on_delete=models.SET_NULL, null=True, blank=True, related_name='vat_entries')
 
     # Foreign key to Merchant, optional, allows the form to be sent to all stores and POS devices under the merchant
-    merchant = models.ForeignKey('Merchant', on_delete=models.SET_NULL, null=True, blank=True, related_name='forms')
+    merchant = models.ForeignKey('Merchant', on_delete=models.SET_NULL, null=True, blank=True, related_name='vat_entries')
 
     # A field to track if the VAT is currently active (could be useful if some VAT rates change over time)
     is_active = models.BooleanField(default=True)

@@ -30,9 +30,9 @@ class Closure(models.Model):
     # Date and time of closure
     closure_date_time = models.DateTimeField(default=timezone.now)
 
-    # Foreign key to Cash Register and Cashier (assuming related models exist)
+    # Foreign key to Cash Register and Gate user (cashier who performed the closure)
     pos = models.ForeignKey('PointOfSale', on_delete=models.CASCADE)
-    cashier = models.ForeignKey('Cashier', on_delete=models.CASCADE)
+    cashier = models.ForeignKey('GateUser', on_delete=models.CASCADE, related_name='closures')
 
     # Receipt and group-number information
     receipt_number = models.IntegerField()

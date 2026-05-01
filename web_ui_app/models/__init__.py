@@ -14,4 +14,22 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from django.contrib import admin
+# Re-export all models from their individual modules so that the package
+# surface is identical to the old flat models.py. Callers import as before:
+#   from web_ui_app.models import Company, CompanyMembership, ...
+
+from core.models import (
+    Company,
+    CompanyDeletionApproval,
+    CompanyDeletionRequest,
+    CompanyJoinRequest,
+    CompanyMembership,
+)
+
+__all__ = [
+    "Company",
+    "CompanyDeletionApproval",
+    "CompanyDeletionRequest",
+    "CompanyJoinRequest",
+    "CompanyMembership",
+]

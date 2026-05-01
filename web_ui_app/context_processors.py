@@ -1,4 +1,4 @@
-# SaleFlex.GATE - Point of Sale Application Gateway
+﻿# SaleFlex.GATE - Point of Sale Application Gateway
 # Copyright (C) 2025-2026 Mousavi.Tech
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,11 +14,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from .models import UserProfile
+from core.models import GateUser
 
 
 def user_profile(request):
     if not request.user.is_authenticated:
         return {}
-    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+    profile, _ = GateUser.objects.get_or_create(user=request.user)
     return {"gate_user_profile": profile}

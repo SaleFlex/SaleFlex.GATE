@@ -38,7 +38,7 @@ class ClosureCashier(models.Model):
 
     # User information: who created/updated the message
     created_by = models.ForeignKey(User, related_name='closure_cashier_created', on_delete=models.SET_NULL, null=True, blank=True)
-    updated_by = models.ForeignKey(User, related_name='closure_cashier_created', on_delete=models.SET_NULL, null=True, blank=True)
+    updated_by = models.ForeignKey(User, related_name='closure_cashier_updated', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Timestamps for record creation and last update
     created_at = models.DateTimeField(auto_now_add=True)
