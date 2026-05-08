@@ -15,10 +15,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from django.db import models
-from django.contrib.auth.models import User
+
+from .base import BaseModel
 
 
-class Merchant(models.Model):
+class Merchant(BaseModel):
     # Merchant name, e.g., "ABC Corp"
     name = models.CharField(max_length=200)
 
@@ -72,17 +73,11 @@ class Merchant(models.Model):
     # Description or reason for why the merchant was deleted
     delete_description = models.TextField(null=True, blank=True)
 
-    # Foreign key to the User model, represents the user who created this merchant record
-    created_by = models.ForeignKey(User, related_name='merchant_created', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Automatically set when the merchant record is created
-    created_at = models.DateTimeField(auto_now_add=True)
 
-    # Foreign key to the User model, represents the user who last updated this merchant record
-    updated_by = models.ForeignKey(User, related_name='merchant_updated', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Automatically set when the merchant record is updated
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = 'Merchant'

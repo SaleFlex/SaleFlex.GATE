@@ -17,10 +17,12 @@
 from django.conf import settings
 from django.db import models
 
+from .base import BaseModel
+
 from .company import Company
 
 
-class CompanyJoinRequest(models.Model):
+class CompanyJoinRequest(BaseModel):
     """A user's request to join a company; approved or rejected by an owner or administrator."""
 
     class Status(models.TextChoices):
@@ -45,7 +47,6 @@ class CompanyJoinRequest(models.Model):
         default=Status.PENDING,
         db_index=True,
     )
-    created_at = models.DateTimeField(auto_now_add=True)
     resolved_at = models.DateTimeField(null=True, blank=True)
     resolved_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,

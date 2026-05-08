@@ -15,10 +15,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from django.db import models
-from django.contrib.auth.models import User
+
+from .base import BaseModel
 
 
-class Store(models.Model):
+class Store(BaseModel):
     """
     Represents a store that belongs to a merchant.
     Each merchant can have multiple stores.
@@ -58,17 +59,11 @@ class Store(models.Model):
     # Foreign key to the Contact model, to link one or more contact persons associated with the store
     contacts = models.ManyToManyField('Contact', related_name='stores')
 
-    # Foreign key to the User model, represents the user who created this store record
-    created_by = models.ForeignKey(User, related_name='store_created', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Automatically set when the store record is created
-    created_at = models.DateTimeField(auto_now_add=True)
 
-    # Foreign key to the User model, represents the user who last updated this store record
-    updated_by = models.ForeignKey(User, related_name='store_updated', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Automatically set when the store record is updated
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = 'Store'

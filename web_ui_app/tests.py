@@ -14,11 +14,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
 from .models import Company, CompanyJoinRequest, CompanyMembership
+
+User = get_user_model()
 
 
 class PortalPasswordChangeTests(TestCase):

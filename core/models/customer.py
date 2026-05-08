@@ -15,10 +15,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from django.db import models
-from django.contrib.auth.models import User
+
+from .base import BaseModel
 
 
-class Customer(models.Model):
+class Customer(BaseModel):
     # Customer code, optional field
     code = models.CharField(max_length=255, blank=True, null=True)
 
@@ -104,13 +105,8 @@ class Customer(models.Model):
     # Description or reason for deletion (if applicable)
     delete_description = models.CharField(max_length=255, null=True, blank=True)
 
-    # User information: who created/updated the message
-    created_by = models.ForeignKey(User, related_name='customer_created', on_delete=models.SET_NULL, null=True, blank=True)
-    updated_by = models.ForeignKey(User, related_name='customer_updated', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Timestamps for record creation and last update
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         constraints = [

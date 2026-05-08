@@ -15,10 +15,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from django.db import models
-from django.contrib.auth.models import User
+
+from .base import BaseModel
 
 
-class PosLabelValue(models.Model):
+class PosLabelValue(BaseModel):
     """
     Represents key-value pairs that display messages on POS device screens.
     Each message is localized using the CultureInfo field.
@@ -43,13 +44,8 @@ class PosLabelValue(models.Model):
     # Indicates if the pos label value has been marked as deleted (soft delete)
     is_deleted = models.BooleanField(default=False, null=True)
 
-    # User information: who created/updated the message
-    created_by = models.ForeignKey(User, related_name='label_value_created', on_delete=models.SET_NULL, null=True, blank=True)
-    updated_by = models.ForeignKey(User, related_name='label_value_updated', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Timestamps for record creation and last update
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = 'LabelValue'

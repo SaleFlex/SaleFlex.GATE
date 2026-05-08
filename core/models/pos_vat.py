@@ -15,10 +15,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from django.db import models
-from django.contrib.auth.models import User
+
+from .base import BaseModel
 
 
-class PosVat(models.Model):
+class PosVat(BaseModel):
     # VAT number (must be unique for a POS-Store-Merchant combination)
     no = models.IntegerField()
 
@@ -55,17 +56,11 @@ class PosVat(models.Model):
     # Description or reason for deletion (if applicable)
     delete_description = models.CharField(max_length=255)
 
-    # Foreign key to the User model, represents the user who created this VAT entry
-    created_by = models.ForeignKey(User, related_name='vat_created', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Automatically set when the VAT entry is created
-    created_at = models.DateTimeField(auto_now_add=True)
 
-    # Foreign key to the User model, represents the user who last updated this VAT entry
-    updated_by = models.ForeignKey(User, related_name='vat_updated', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Automatically set when the VAT entry is updated
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         constraints = [

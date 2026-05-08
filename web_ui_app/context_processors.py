@@ -14,11 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from core.models import GateUser
-
-
 def user_profile(request):
     if not request.user.is_authenticated:
         return {}
-    profile, _ = GateUser.objects.get_or_create(user=request.user)
-    return {"gate_user_profile": profile}
+    # request.user is core.Cashier (AUTH_USER_MODEL)
+    return {"cashier": request.user}

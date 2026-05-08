@@ -15,10 +15,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from django.db import models
-from django.contrib.auth.models import User
+
+from .base import BaseModel
 
 
-class PosDepartment(models.Model):
+class PosDepartment(BaseModel):
     # Department number (required)
     no = models.IntegerField()
 
@@ -55,17 +56,11 @@ class PosDepartment(models.Model):
     # Description or reason for deletion (if applicable)
     delete_description = models.CharField(max_length=255, default=False, null=True)
 
-    # Foreign key to the User model, represents the user who created this department
-    created_by = models.ForeignKey(User, related_name='department_created', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Automatically set when the department is created
-    created_at = models.DateTimeField(auto_now_add=True)
 
-    # Foreign key to the User model, represents the user who last updated this department
-    updated_by = models.ForeignKey(User, related_name='department_updated', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Automatically set when the VAT entry is updated
-    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"Department {self.name} ({self.no}-%{self.vat.rate})"

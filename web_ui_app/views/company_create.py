@@ -45,6 +45,7 @@ def company_create(request: HttpRequest) -> HttpResponse:
                     user=request.user,
                     is_owner=True,
                     is_admin=True,
+                    is_office_user=True,
                 )
             messages.success(request, f"Company “{company.name}” was created. Share slug: {company.slug}")
             return redirect("company_detail", slug=company.slug)

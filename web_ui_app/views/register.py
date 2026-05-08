@@ -17,18 +17,18 @@
 from django.contrib.auth import login
 from django.shortcuts import redirect, render
 
-from ..forms import GateUserCreationForm
+from ..forms import CashierCreationForm
 
 
 def register(request):
     if request.user.is_authenticated:
         return redirect("dashboard")
     if request.method == "POST":
-        form = GateUserCreationForm(request.POST)
+        form = CashierCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
             return redirect("dashboard")
     else:
-        form = GateUserCreationForm()
+        form = CashierCreationForm()
     return render(request, "registration/register.html", {"form": form})

@@ -15,6 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from core.models import (
+    Cashier,
     CashierStoreAssignment,
     City,
     Closure,
@@ -29,7 +30,6 @@ from core.models import (
     Country,
     Customer,
     CustomerType,
-    GateUser,
     Merchant,
     MerchantActivitySector,
     MerchantAPIToken,
@@ -52,6 +52,7 @@ from core.models import (
 )
 
 __all__ = [
+    "Cashier",
     "CashierStoreAssignment",
     "City",
     "Closure",
@@ -66,7 +67,6 @@ __all__ = [
     "Country",
     "Customer",
     "CustomerType",
-    "GateUser",
     "Merchant",
     "MerchantActivitySector",
     "MerchantAPIToken",

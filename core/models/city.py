@@ -15,9 +15,10 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from django.db import models
-from django.contrib.auth.models import User
 
-class City(models.Model):
+from .base import BaseModel
+
+class City(BaseModel):
     # Name of the city, e.g., "Istanbul", "Los Angeles"
     name = models.CharField(max_length=150)
 
@@ -42,17 +43,11 @@ class City(models.Model):
     # Description or reason for why the city was deleted
     delete_description = models.TextField(null=True, blank=True)
 
-    # Foreign key to the User model, represents the user who created this city record
-    created_by = models.ForeignKey(User, related_name='city_created', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Automatically set when the city record is created
-    created_at = models.DateTimeField(auto_now_add=True)
 
-    # Foreign key to the User model, represents the user who last updated this city record
-    updated_by = models.ForeignKey(User, related_name='city_updated', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Automatically set when the city record is updated
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = 'City'

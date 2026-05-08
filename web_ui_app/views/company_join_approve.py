@@ -52,7 +52,13 @@ def company_join_approve(request: HttpRequest, slug: str, pk: int) -> HttpRespon
         CompanyMembership.objects.get_or_create(
             company=company,
             user=jr.user,
-            defaults={"is_owner": False, "is_admin": False},
+            defaults={
+                "is_owner": False,
+                "is_admin": False,
+                "is_store_manager": False,
+                "is_pos_cashier": False,
+                "is_office_user": False,
+            },
         )
     messages.success(request, f"Approved {jr.user.username} as a member.")
     return redirect("company_detail", slug=slug)

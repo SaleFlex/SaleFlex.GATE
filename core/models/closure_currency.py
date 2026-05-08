@@ -15,10 +15,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from django.db import models
-from django.contrib.auth.models import User
+
+from .base import BaseModel
 
 
-class ClosureCurrency(models.Model):
+class ClosureCurrency(BaseModel):
     # Links this closure currency to a specific closure event
     closure = models.ForeignKey('Closure', on_delete=models.CASCADE)
 
@@ -47,16 +48,12 @@ class ClosureCurrency(models.Model):
     delete_description = models.CharField(max_length=255, null=True, blank=True)
 
     # Tracks the user who created the record
-    created_by = models.ForeignKey(User, related_name='closure_currency_created', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Tracks the user who last updated the record
-    updated_by = models.ForeignKey(User, related_name='closure_currency_updated', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Automatically stores the timestamp when the record was created
-    created_at = models.DateTimeField(auto_now_add=True)
 
     # Automatically stores the timestamp when the record was last updated
-    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"Currency {self.currency.name} - Foreign: {self.currency_foreign_total_amount}, Domestic: {self.currency_domestic_total_amount}"

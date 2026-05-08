@@ -15,75 +15,52 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 
 from .models import (
+    Cashier,
     CashierStoreAssignment,
     Company,
     CompanyDeletionApproval,
     CompanyDeletionRequest,
     CompanyJoinRequest,
     CompanyMembership,
-    GateUser,
 )
 
 
 # ---------------------------------------------------------------------------
-# GateUser
+# Cashier (auth user)
 # ---------------------------------------------------------------------------
+
 
 class CashierStoreAssignmentInline(admin.TabularInline):
     model = CashierStoreAssignment
+    fk_name = "cashier"
     extra = 0
     fields = ("store", "can_access_all_pos", "is_active")
 
 
-@admin.register(GateUser)
-class GateUserAdmin(admin.ModelAdmin):
-    def get_username(self, obj):
-        return obj.user.username
-    get_username.short_description = "User"
-    get_username.admin_order_field = "user__username"
-
+@admin.register(Cashier)
+class CashierAdmin(UserAdmin):
+    inlines = (CashierStoreAssignmentInline,)
     list_display = (
-        "get_username",
+        "username",
+        "email",
+        "first_name",
+        "last_name",
+        "is_staff",
         "cashier_number",
-        "is_cashier",
-        "is_store_manager",
-        "is_office_user",
-        "is_company_admin",
-        "is_company_owner",
-        "is_active",
+        "is_deleted",
     )
-    list_display_links = ("get_username",)
-    search_fields = ("user__username", "user__email", "user__first_name", "user__last_name")
-    list_filter = (
-        "is_cashier",
-        "is_store_manager",
-        "is_office_user",
-        "is_company_admin",
-        "is_company_owner",
-        "is_active",
-    )
+    list_filter = (*UserAdmin.list_filter, "is_deleted")
+    search_fields = ("username", "email", "first_name", "last_name")
+
     fieldsets = (
-        (None, {"fields": ("user",)}),
-        ("Portal", {"fields": ("avatar",)}),
+        *UserAdmin.fieldsets,
         (
-            "POS / Operations",
-            {"fields": ("cashier_number", "pin_code"), "classes": ("collapse",)},
+            "GATE profile",
+            {"fields": ("avatar", "cashier_number", "pin_code", "is_deleted")},
         ),
-        (
-            "Roles",
-            {
-                "fields": (
-                    "is_cashier",
-                    "is_store_manager",
-                    "is_office_user",
-                    "is_company_admin",
-                    "is_company_owner",
-                )
-            },
-        ),
-        ("Status", {"fields": ("is_active", "is_deleted")}),
         (
             "Audit",
             {
@@ -92,32 +69,34 @@ class GateUserAdmin(admin.ModelAdmin):
             },
         ),
     )
-    readonly_fields = ("created_at", "updated_at")
-    inlines = (CashierStoreAssignmentInline,)
+    readonly_fields = (*UserAdmin.readonly_fields, "created_at", "updated_at")
 
 
 @admin.register(CashierStoreAssignment)
 class CashierStoreAssignmentAdmin(admin.ModelAdmin):
-    def get_gate_user(self, obj):
-        return obj.gate_user.user.username
-    get_gate_user.short_description = "Gate User"
-    get_gate_user.admin_order_field = "gate_user__user__username"
+    def get_cashier(self, obj):
+        return obj.cashier.username
+
+    get_cashier.short_description = "Cashier"
+    get_cashier.admin_order_field = "cashier__username"
 
     def get_store(self, obj):
         return str(obj.store)
+
     get_store.short_description = "Store"
     get_store.admin_order_field = "store__name"
 
-    list_display = ("get_gate_user", "get_store", "can_access_all_pos", "is_active", "created_at")
-    list_display_links = ("get_gate_user",)
+    list_display = ("get_cashier", "get_store", "can_access_all_pos", "is_active", "created_at")
+    list_display_links = ("get_cashier",)
     list_filter = ("can_access_all_pos", "is_active")
-    search_fields = ("gate_user__user__username", "store__name")
+    search_fields = ("cashier__username", "store__name")
     filter_horizontal = ("pos_devices",)
 
 
 # ---------------------------------------------------------------------------
 # Company
 # ---------------------------------------------------------------------------
+
 
 @admin.register(Company)
 class CompanyAdmin(admin.ModelAdmin):
@@ -146,17 +125,34 @@ class CompanyAdmin(admin.ModelAdmin):
 class CompanyMembershipAdmin(admin.ModelAdmin):
     def get_company(self, obj):
         return obj.company.name
+
     get_company.short_description = "Company"
     get_company.admin_order_field = "company__name"
 
     def get_user(self, obj):
         return obj.user.username
+
     get_user.short_description = "User"
     get_user.admin_order_field = "user__username"
 
-    list_display = ("get_company", "get_user", "is_owner", "is_admin", "joined_at")
+    list_display = (
+        "get_company",
+        "get_user",
+        "is_owner",
+        "is_admin",
+        "is_store_manager",
+        "is_pos_cashier",
+        "is_office_user",
+        "joined_at",
+    )
     list_display_links = ("get_company",)
-    list_filter = ("is_owner", "is_admin")
+    list_filter = (
+        "is_owner",
+        "is_admin",
+        "is_store_manager",
+        "is_pos_cashier",
+        "is_office_user",
+    )
     search_fields = ("company__name", "company__slug", "user__username")
 
 
@@ -164,11 +160,13 @@ class CompanyMembershipAdmin(admin.ModelAdmin):
 class CompanyJoinRequestAdmin(admin.ModelAdmin):
     def get_company(self, obj):
         return obj.company.name
+
     get_company.short_description = "Company"
     get_company.admin_order_field = "company__name"
 
     def get_user(self, obj):
         return obj.user.username
+
     get_user.short_description = "User"
     get_user.admin_order_field = "user__username"
 
@@ -187,11 +185,13 @@ class CompanyDeletionApprovalInline(admin.TabularInline):
 class CompanyDeletionRequestAdmin(admin.ModelAdmin):
     def get_company(self, obj):
         return obj.company.name
+
     get_company.short_description = "Company"
     get_company.admin_order_field = "company__name"
 
     def get_requested_by(self, obj):
         return obj.requested_by.username
+
     get_requested_by.short_description = "Requested By"
     get_requested_by.admin_order_field = "requested_by__username"
 

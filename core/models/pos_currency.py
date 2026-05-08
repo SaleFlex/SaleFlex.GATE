@@ -15,7 +15,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from django.db import models
-from django.contrib.auth.models import User
+
+from .base import BaseModel
 
 
 # No: 1
@@ -25,7 +26,7 @@ from django.contrib.auth.models import User
 # Sign: $
 # SignDirection: R
 # CurrencySymbol: USD
-class PosCurrency(models.Model):
+class PosCurrency(BaseModel):
     # Currency number (unique for each currency)
     no = models.IntegerField()
 
@@ -71,17 +72,11 @@ class PosCurrency(models.Model):
     # Description or reason for deletion (if applicable)
     delete_description = models.CharField(max_length=255)
 
-    # Foreign key to the User model, represents the user who created this currency entry
-    created_by = models.ForeignKey(User, related_name='currency_created', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Automatically set when the currency entry is created
-    created_at = models.DateTimeField(auto_now_add=True)
 
-    # Foreign key to the User model, represents the user who last updated this currency entry
-    updated_by = models.ForeignKey(User, related_name='currency_updated', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Automatically set when the currency entry is updated
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         constraints = [

@@ -15,20 +15,19 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import uuid
+
 from django.db import models
 from django.utils import timezone
-from django.contrib.auth.models import User
+
+from .base import BaseModel
 
 
-class MerchantAPIToken(models.Model):
+class MerchantAPIToken(BaseModel):
     # Token value (using UUID for uniqueness)
     token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     # Link the token to a specific merchant
     merchant = models.ForeignKey('Merchant', on_delete=models.CASCADE, related_name='api_tokens')
-
-    # Date and time when the token was created
-    created_at = models.DateTimeField(auto_now_add=True)
 
     # Expiration date of the token (optional, you can use this to set token lifetimes)
     expires_at = models.DateTimeField(null=True, blank=True)
@@ -38,9 +37,6 @@ class MerchantAPIToken(models.Model):
 
     # Indicates if the token has been marked as deleted (soft delete)
     is_deleted = models.BooleanField(default=False, null=True)
-
-    # Foreign key to the User model, to track who created the token (optional)
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='token_created')
 
     def has_expired(self):
         """Checks if the token has expired based on the current time and expiration date."""

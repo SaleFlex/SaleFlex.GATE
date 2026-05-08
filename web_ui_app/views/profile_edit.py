@@ -18,31 +18,28 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
-from core.models import GateUser
-
-from ..forms import GateUserAccountForm, GateUserAvatarForm
+from ..forms import CashierAccountForm, CashierAvatarForm
 
 
 @login_required
 def profile_edit(request):
-    profile, _ = GateUser.objects.get_or_create(user=request.user)
     if request.method == "POST":
-        user_form = GateUserAccountForm(request.POST, instance=request.user)
-        avatar_form = GateUserAvatarForm(
+        account_form = CashierAccountForm(request.POST, instance=request.user)
+        avatar_form = CashierAvatarForm(
             request.POST,
             request.FILES,
-            instance=profile,
+            instance=request.user,
         )
-        if user_form.is_valid() and avatar_form.is_valid():
-            user_form.save()
+        if account_form.is_valid() and avatar_form.is_valid():
+            account_form.save()
             avatar_form.save()
             messages.success(request, "Your profile was updated.")
             return redirect("profile_edit")
     else:
-        user_form = GateUserAccountForm(instance=request.user)
-        avatar_form = GateUserAvatarForm(instance=profile)
+        account_form = CashierAccountForm(instance=request.user)
+        avatar_form = CashierAvatarForm(instance=request.user)
     return render(
         request,
         "web_ui_app/profile_edit.html",
-        {"user_form": user_form, "avatar_form": avatar_form},
+        {"user_form": account_form, "avatar_form": avatar_form},
     )

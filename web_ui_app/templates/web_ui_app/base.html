@@ -26,8 +26,8 @@
                             title="Account menu"
                         >
                             <span class="user-menu__avatar-wrap">
-                                {% if gate_user_profile.avatar %}
-                                    <img class="user-menu__avatar" src="{{ gate_user_profile.avatar.url }}" alt="" width="36" height="36">
+                                {% if cashier.avatar %}
+                                    <img class="user-menu__avatar" src="{{ cashier.avatar.url }}" alt="" width="36" height="36">
                                 {% else %}
                                     <img class="user-menu__avatar" src="{% static 'web_ui_app/icons/avatar-default.svg' %}" alt="" width="36" height="36">
                                 {% endif %}

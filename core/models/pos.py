@@ -15,10 +15,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from django.db import models
-from django.contrib.auth.models import User
+
+from .base import BaseModel
 
 
-class PointOfSale(models.Model):
+class PointOfSale(BaseModel):
     """
     Represents a Point of Sale (POS) device that belongs to a store.
     Each store can have multiple POS devices with various hardware and configuration details.
@@ -90,17 +91,11 @@ class PointOfSale(models.Model):
     # Indicates if the pos has been marked as deleted (soft delete)
     is_deleted = models.BooleanField(default=False, null=True)
 
-    # Foreign key to the User model, represents the user who created this POS record
-    created_by = models.ForeignKey(User, related_name='pos_created', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Automatically set when the POS record is created
-    created_at = models.DateTimeField(auto_now_add=True)
 
-    # Foreign key to the User model, represents the user who last updated this POS record
-    updated_by = models.ForeignKey(User, related_name='pos_updated', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Automatically set when the POS record is updated
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = 'PointOfSale'

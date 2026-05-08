@@ -14,20 +14,29 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+from django.conf import settings
 from django.db import models
 
-from .base import BaseModel
 
+class BaseModel(models.Model):
+    """Common audit fields shared by all core concrete models."""
 
-class CustomerType(BaseModel):
-    # Customer type name (e.g., Individual, Corporate, VIP)
-    name = models.CharField(max_length=50, unique=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="%(app_label)s_%(class)s_created",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+    updated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="%(app_label)s_%(class)s_updated",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
-    # Description for the customer type (optional)
-    description = models.TextField(blank=True, null=True)
-
-
-    # Timestamps for record creation and last update
-
-    def __str__(self):
-        return self.name
+    class Meta:
+        abstract = True

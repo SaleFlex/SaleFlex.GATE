@@ -15,10 +15,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from django.db import models
-from django.contrib.auth.models import User
+
+from .base import BaseModel
 
 
-class PosPaymentType(models.Model):
+class PosPaymentType(BaseModel):
     # Type number (required)
     type_no = models.IntegerField()
 
@@ -46,17 +47,11 @@ class PosPaymentType(models.Model):
     # Optional description or reason for deletion
     delete_description = models.CharField(max_length=255, blank=True, null=True)
 
-    # User information: who created the POS payment type
-    created_by = models.ForeignKey(User, related_name='pos_payment_type_created', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Automatically set when the POS payment type is created
-    created_at = models.DateTimeField(auto_now_add=True)
 
-    # User information: who last updated the POS payment type
-    updated_by = models.ForeignKey(User, related_name='pos_payment_type_updated', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Automatically set when the POS payment type is updated
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         # Adding constraints for unique combination of type_no and culture_info to match SQL UNIQUE constraint

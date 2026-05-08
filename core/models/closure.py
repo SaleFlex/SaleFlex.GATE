@@ -14,13 +14,15 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import uuid
+
 from django.db import models
 from django.utils import timezone
-import uuid
-from django.contrib.auth.models import User
+
+from .base import BaseModel
 
 
-class Closure(models.Model):
+class Closure(BaseModel):
     # Unique ID for Closure
     closure_unique_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
@@ -32,7 +34,7 @@ class Closure(models.Model):
 
     # Foreign key to Cash Register and Gate user (cashier who performed the closure)
     pos = models.ForeignKey('PointOfSale', on_delete=models.CASCADE)
-    cashier = models.ForeignKey('GateUser', on_delete=models.CASCADE, related_name='closures')
+    cashier = models.ForeignKey("Cashier", on_delete=models.CASCADE, related_name="closures")
 
     # Receipt and group-number information
     receipt_number = models.IntegerField()
@@ -59,13 +61,8 @@ class Closure(models.Model):
     # Description or reason for deletion (if applicable)
     delete_description = models.CharField(max_length=255, null=True, blank=True)
 
-    # User information: who created/updated the message
-    created_by = models.ForeignKey(User, related_name='closure_created', on_delete=models.SET_NULL, null=True, blank=True)
-    updated_by = models.ForeignKey(User, related_name='closure_updated', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Timestamps for record creation and last update
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"Closure {self.closure_unique_id} - {self.closure_date_time}"

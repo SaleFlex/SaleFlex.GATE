@@ -14,11 +14,12 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from django.contrib.auth.models import User
 from django.db import models
 
+from .base import BaseModel
 
-class MerchantBusinessOperationType(models.Model):
+
+class MerchantBusinessOperationType(BaseModel):
     # Name of the business operation type, e.g., "Wholesaler", "Retailer"
     name = models.CharField(max_length=100, unique=True)
 
@@ -28,13 +29,8 @@ class MerchantBusinessOperationType(models.Model):
     # Indicates if the business operation type has been marked as deleted (soft delete)
     is_deleted = models.BooleanField(default=False, null=True)
 
-    # User information: who created/updated the message
-    created_by = models.ForeignKey(User, related_name='merchant_business_operation_type_created', on_delete=models.SET_NULL, null=True, blank=True)
-    updated_by = models.ForeignKey(User, related_name='merchant_business_operation_type_updated', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Timestamps for record creation and last update
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name

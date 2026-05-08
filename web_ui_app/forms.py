@@ -20,9 +20,8 @@ from django.contrib.auth.forms import (
     PasswordChangeForm,
     UserCreationForm,
 )
-from django.contrib.auth.models import User
 
-from core.models import Company, GateUser
+from core.models import Cashier, Company
 from .widgets import (
     AtomicEmailInput,
     AtomicFileInput,
@@ -55,11 +54,11 @@ class GatePasswordChangeForm(PasswordChangeForm):
                 )
 
 
-class GateUserCreationForm(UserCreationForm):
+class CashierCreationForm(UserCreationForm):
     email = forms.EmailField(required=False, help_text="Optional. Used for notifications when enabled.")
 
     class Meta(UserCreationForm.Meta):
-        model = User
+        model = Cashier
         fields = ("username", "email")
 
     def __init__(self, *args, **kwargs):
@@ -82,11 +81,11 @@ class GateUserCreationForm(UserCreationForm):
                 )
 
 
-class GateUserAccountForm(forms.ModelForm):
-    """Update signed-in user fields (password is changed elsewhere)."""
+class CashierAccountForm(forms.ModelForm):
+    """Update signed-in cashier fields (password is changed elsewhere)."""
 
     class Meta:
-        model = User
+        model = Cashier
         fields = ("first_name", "last_name", "email")
 
     def __init__(self, *args, **kwargs):
@@ -100,9 +99,9 @@ class GateUserAccountForm(forms.ModelForm):
             f.widget = AtomicEmailInput(attrs={**f.widget.attrs})
 
 
-class GateUserAvatarForm(forms.ModelForm):
+class CashierAvatarForm(forms.ModelForm):
     class Meta:
-        model = GateUser
+        model = Cashier
         fields = ("avatar",)
 
     def __init__(self, *args, **kwargs):

@@ -14,7 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from .cashier import GateUser
+from .base import BaseModel
+from .cashier import Cashier
 from .cashier_store_assignment import CashierStoreAssignment
 from .company import Company
 from .company_deletion import CompanyDeletionApproval, CompanyDeletionRequest
@@ -54,6 +55,8 @@ from .warehouse_product import WarehouseProduct
 from .warehouse_transaction import WarehouseTransaction
 
 __all__ = [
+    "BaseModel",
+    "Cashier",
     "CashierStoreAssignment",
     "City",
     "Company",
@@ -73,7 +76,6 @@ __all__ = [
     "Country",
     "Customer",
     "CustomerType",
-    "GateUser",
     "Merchant",
     "MerchantActivitySector",
     "MerchantAPIToken",

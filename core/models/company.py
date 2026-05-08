@@ -16,8 +16,10 @@
 
 from django.db import models
 
+from .base import BaseModel
 
-class Company(models.Model):
+
+class Company(BaseModel):
     """Portal tenant (hub company). Distinct from pos_api_app.Merchant until linked."""
 
     name = models.CharField(max_length=200)
@@ -40,8 +42,6 @@ class Company(models.Model):
         verbose_name="Registered office address",
         help_text="Registered office or principal trading address, if recorded.",
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
         return self.name

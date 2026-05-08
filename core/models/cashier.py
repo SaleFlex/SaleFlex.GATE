@@ -14,36 +14,22 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from django.conf import settings
+from django.contrib.auth.models import AbstractUser
 from django.core.validators import FileExtensionValidator
 from django.db import models
 
+from .base import BaseModel
 
-class GateUser(models.Model):
+
+class Cashier(AbstractUser, BaseModel):
     """
-    Universal profile for every person in the SaleFlex ecosystem.
+    Django auth user and universal SaleFlex identity for GATE, OFFICE, PyPOS, and mPOS.
 
-    One GateUser record exists per Django auth User. It is the single source of
-    truth for identity fields that are shared across GATE (web portal),
-    SaleFlex.OFFICE, SaleFlex.PyPOS, and SaleFlex.mPOS. When those applications
-    authenticate against GATE they receive a subset of these fields as their
-    user/cashier payload.
-
-    Role flags are not mutually exclusive: a company owner is also typically an
-    admin; a store manager may also act as a cashier on the floor.
-    Store-level POS device authorisation is held separately in
-    CashierStoreAssignment so that one user can work across multiple stores.
+    Company-scoped roles (owner, admin, store manager, POS cashier, OFFICE access)
+    are stored on ``CompanyMembership`` so the same person can differ by company.
+    Per-store POS device authorisation is on ``CashierStoreAssignment``.
     """
 
-    # --- Identity anchor ---
-    user = models.OneToOneField(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name="gate_user",
-        help_text="Django auth user this profile belongs to.",
-    )
-
-    # --- Portal / web UI fields ---
     avatar = models.FileField(
         upload_to="gate/avatars/%Y/%m/",
         blank=True,
@@ -55,8 +41,6 @@ class GateUser(models.Model):
         ],
         help_text="Optional profile picture shown in the portal header and synced to client apps.",
     )
-
-    # --- POS / operations fields (synced to PyPOS, OFFICE, mPOS) ---
     cashier_number = models.PositiveIntegerField(
         null=True,
         blank=True,
@@ -67,79 +51,31 @@ class GateUser(models.Model):
         blank=True,
         help_text="Short numeric PIN used for quick login on POS / kitchen / mPOS screens.",
     )
-
-    # --- System-wide role flags ---
-    # These are ecosystem-level roles. Store-level authorisation is in CashierStoreAssignment.
-    is_cashier = models.BooleanField(
-        default=False,
-        help_text="Can operate POS terminals. Authorised stores/devices are in CashierStoreAssignment.",
-    )
-    is_store_manager = models.BooleanField(
-        default=False,
-        help_text="Can manage store configuration, staff, and reports for assigned stores.",
-    )
-    is_office_user = models.BooleanField(
-        default=False,
-        help_text="Can log in to SaleFlex.OFFICE (back-office / ERP screens).",
-    )
-    is_company_admin = models.BooleanField(
-        default=False,
-        help_text="Company-level administrator: full portal operations for their company.",
-    )
-    is_company_owner = models.BooleanField(
-        default=False,
-        help_text="Company owner tag: required to start/approve company deletion; assignable only by another owner.",
-    )
-
-    # --- Status ---
-    is_active = models.BooleanField(
-        default=True,
-        help_text="Inactive users cannot log in to any SaleFlex application.",
-    )
     is_deleted = models.BooleanField(
         default=False,
         help_text="Soft-delete flag; records are retained for audit purposes.",
     )
 
-    # --- Audit trail ---
-    created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name="gate_user_created",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-    )
-    updated_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name="gate_user_updated",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-    )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
     class Meta:
-        db_table = "GateUser"
-        verbose_name = "Gate user"
-        verbose_name_plural = "Gate users"
+        db_table = "Cashier"
+        verbose_name = "Cashier"
+        verbose_name_plural = "Cashiers"
 
     def __str__(self) -> str:
-        return self.user.username
+        return self.username
 
     @property
     def display_name(self) -> str:
-        """Full name when available, username otherwise."""
-        full = self.user.get_full_name()
-        return full if full else self.user.username
+        full = self.get_full_name()
+        return full if full else self.username
 
     def get_store_assignments(self):
-        """Return all active CashierStoreAssignment records for this user."""
+        """Return all active CashierStoreAssignment records for this cashier."""
         return self.store_assignments.filter(is_active=True)
 
     def get_accessible_pos_devices(self, store):
         """
-        Return the POS devices this user can access in a specific store.
+        Return the POS devices this cashier can access in a specific store.
         Delegates to the matching CashierStoreAssignment, if any.
         """
         assignment = self.store_assignments.filter(store=store, is_active=True).first()

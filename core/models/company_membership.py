@@ -17,11 +17,19 @@
 from django.conf import settings
 from django.db import models
 
+from .base import BaseModel
+
 from .company import Company
 
 
-class CompanyMembership(models.Model):
-    """Links a user to a company with optional owner and administrator flags."""
+class CompanyMembership(BaseModel):
+    """
+    Links a Cashier to a company with per-company role flags.
+
+    The same person can be an owner in one company, a POS cashier in another,
+    and a store manager elsewhere. Owner/admin semantics for deletion and
+    privilege checks are unchanged.
+    """
 
     company = models.ForeignKey(
         Company,
@@ -40,6 +48,18 @@ class CompanyMembership(models.Model):
     is_admin = models.BooleanField(
         default=False,
         help_text="Company administrator: full portal operations except company delete and owner-tag changes on others.",
+    )
+    is_store_manager = models.BooleanField(
+        default=False,
+        help_text="May manage store configuration, staff, and reports for this company's stores.",
+    )
+    is_pos_cashier = models.BooleanField(
+        default=False,
+        help_text="May operate POS terminals for this company when store/device assignments exist.",
+    )
+    is_office_user = models.BooleanField(
+        default=False,
+        help_text="May log in to SaleFlex.OFFICE for this company's back-office data.",
     )
     joined_at = models.DateTimeField(auto_now_add=True)
 

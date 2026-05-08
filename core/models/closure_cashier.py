@@ -15,10 +15,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from django.db import models
-from django.contrib.auth.models import User
+
+from .base import BaseModel
 
 
-class ClosureCashier(models.Model):
+class ClosureCashier(BaseModel):
     # Foreign key to Closure
     closure = models.ForeignKey('Closure', on_delete=models.CASCADE)
 
@@ -36,13 +37,8 @@ class ClosureCashier(models.Model):
     # Description or reason for deletion (if applicable)
     delete_description = models.CharField(max_length=255, null=True, blank=True)
 
-    # User information: who created/updated the message
-    created_by = models.ForeignKey(User, related_name='closure_cashier_created', on_delete=models.SET_NULL, null=True, blank=True)
-    updated_by = models.ForeignKey(User, related_name='closure_cashier_updated', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Timestamps for record creation and last update
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"Cashier {self.cashier_name} - Count: {self.cashier_count}, Amount: {self.cashier_amount}"

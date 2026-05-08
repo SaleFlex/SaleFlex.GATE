@@ -14,11 +14,12 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from django.contrib.auth.models import User
 from django.db import models
 
+from .base import BaseModel
 
-class Warehouse(models.Model):
+
+class Warehouse(BaseModel):
     # Warehouse Id (Automatically generated in Django)
     id = models.AutoField(primary_key=True)
 
@@ -76,13 +77,8 @@ class Warehouse(models.Model):
     # Indicates if the warehouse has been marked as deleted (soft delete)
     is_deleted = models.BooleanField(default=False)
 
-    # User information: who created/updated the message
-    created_by = models.ForeignKey(User, related_name='warehouse_created', on_delete=models.SET_NULL, null=True, blank=True)
-    updated_by = models.ForeignKey(User, related_name='warehouse_updated', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Timestamps for record creation and last update
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name

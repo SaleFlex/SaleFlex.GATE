@@ -14,29 +14,27 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from django.conf import settings
 from django.db import models
 
+from .base import BaseModel
 
-class CashierStoreAssignment(models.Model):
+
+class CashierStoreAssignment(BaseModel):
     """
-    Grants a GateUser access to a specific store and optionally to a subset
+    Grants a Cashier access to a specific store and optionally to a subset
     of its POS devices.
 
-    A single GateUser may have assignments in multiple stores (multi-store
-    support). The GateUser.is_cashier flag indicates the role at the ecosystem
-    level; this model records which store(s) and device(s) they can actually
-    operate.
-
-    When can_access_all_pos is True the pos_devices M2M is ignored and the
-    user may open any active POS terminal in that store.
+    A Cashier may have assignments in multiple stores. Whether they may act as
+    a POS operator for that company's stores is governed by
+    ``CompanyMembership.is_pos_cashier`` (and related roles); this model records
+    which store(s) and device(s) they can actually open.
     """
 
-    gate_user = models.ForeignKey(
-        "GateUser",
+    cashier = models.ForeignKey(
+        "Cashier",
         on_delete=models.CASCADE,
         related_name="store_assignments",
-        help_text="The GateUser being assigned to this store.",
+        help_text="The cashier being assigned to this store.",
     )
     store = models.ForeignKey(
         "Store",
@@ -59,37 +57,19 @@ class CashierStoreAssignment(models.Model):
         help_text="Inactive assignments are ignored by all applications.",
     )
 
-    # Audit trail
-    created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name="cashier_assignment_created",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-    )
-    updated_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name="cashier_assignment_updated",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-    )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
     class Meta:
         db_table = "CashierStoreAssignment"
         verbose_name = "Cashier store assignment"
         verbose_name_plural = "Cashier store assignments"
         constraints = [
             models.UniqueConstraint(
-                fields=("gate_user", "store"),
-                name="uniq_gate_user_store_assignment",
+                fields=("cashier", "store"),
+                name="uniq_cashier_store_assignment",
             )
         ]
 
     def __str__(self) -> str:
-        return f"{self.gate_user} @ {self.store}"
+        return f"{self.cashier} @ {self.store}"
 
     def get_accessible_pos_devices(self):
         """

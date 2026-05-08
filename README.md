@@ -4,7 +4,7 @@
 ![Version](https://img.shields.io/badge/version-0.1.0a1-orange.svg)
 ![Status](https://img.shields.io/badge/status-alpha-orange.svg)
 
-[SaleFlex Ecosystem](https://github.com/SaleFlex) | [SaleFlex.PyPOS](https://github.com/SaleFlex/SaleFlex.PyPOS) | [SaleFlex.OFFICE](https://github.com/SaleFlex/SaleFlex.OFFICE) | **[SaleFlex.GATE](https://github.com/SaleFlex/SaleFlex.GATE)** | [SaleFlex.KITCHEN](https://github.com/SaleFlex/SaleFlex.KITCHEN) | [SaleFlex.POS](https://github.com/SaleFlex/SaleFlex.POS) | [SaleFlex.mPOS](https://github.com/SaleFlex/SaleFlex.mPOS)
+[SaleFlex Ecosystem](https://github.com/SaleFlex) | [SaleFlex.PyPOS](https://github.com/SaleFlex/SaleFlex.PyPOS) | [SaleFlex.OFFICE](https://github.com/SaleFlex/SaleFlex.OFFICE) | **[SaleFlex.GATE](https://github.com/SaleFlex/SaleFlex.GATE)** | [SaleFlex.KITCHEN](https://github.com/SaleFlex/SaleFlex.KITCHEN) | [SaleFlex.mPOS](https://github.com/SaleFlex/SaleFlex.mPOS) | [SaleFlex.POS](https://github.com/SaleFlex/SaleFlex.POS)
 
 # SaleFlex.GATE
 
@@ -41,6 +41,8 @@ The Community Edition includes everything you need to get started:
 - Self-hosted - your data stays with you
 
 Anyone can clone, deploy, and modify SaleFlex.GATE for their own needs. Contributions are welcome.
+
+Need a managed setup, ready-to-deploy packages, or enterprise features? See [Commercial Services](#commercial-services) and [Managed Cloud](#managed-cloud).
 
 ---
 
@@ -117,7 +119,7 @@ Open Django Admin: http://127.0.0.1:8000/admin/
 
 ### Done
 - Multi-tenant company and store model
-- Universal user identity (GateUser) across all SaleFlex apps
+- Universal user identity (`Cashier`, `AUTH_USER_MODEL`) across all SaleFlex apps
 - Company creation, join requests, and multi-owner deletion approvals
 - Django Admin with full model management
 - Portal UI: landing, login/register, dashboard, company management
@@ -148,7 +150,7 @@ Open Django Admin: http://127.0.0.1:8000/admin/
 | [SaleFlex.OFFICE](https://github.com/SaleFlex/SaleFlex.OFFICE) | Back-office and ERP-style management |
 | [SaleFlex.KITCHEN](https://github.com/SaleFlex/SaleFlex.KITCHEN) | Kitchen display system |
 | [SaleFlex.POS](https://github.com/SaleFlex/SaleFlex.POS) | Legacy .NET POS client |
-| [SaleFlex.mPOS](https://github.com/SaleFlex/SaleFlex.mPOS) | Mobile POS (Android) |
+| [SaleFlex.mPOS](https://github.com/SaleFlex/SaleFlex.mPOS) | Android mobile POS (commercial) |
 
 ---
 

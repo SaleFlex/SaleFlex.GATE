@@ -17,10 +17,12 @@
 from django.conf import settings
 from django.db import models
 
+from .base import BaseModel
+
 from .company import Company
 
 
-class CompanyDeletionRequest(models.Model):
+class CompanyDeletionRequest(BaseModel):
     """
     Tracks a multi-owner deletion workflow for a company.
     When all current owners have approved, the company is deleted.
@@ -36,14 +38,13 @@ class CompanyDeletionRequest(models.Model):
         on_delete=models.CASCADE,
         related_name="initiated_company_deletions",
     )
-    created_at = models.DateTimeField(auto_now_add=True)
     completed_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ("-created_at",)
 
 
-class CompanyDeletionApproval(models.Model):
+class CompanyDeletionApproval(BaseModel):
     """Records a single owner's approval for a pending company deletion request."""
 
     deletion_request = models.ForeignKey(

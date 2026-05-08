@@ -15,10 +15,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from django.db import models
-from django.contrib.auth.models import User
+
+from .base import BaseModel
 
 
-class State(models.Model):
+class State(BaseModel):
     # Name of the state or region, e.g., "California", "Bavaria"
     name = models.CharField(max_length=150)
 
@@ -43,17 +44,11 @@ class State(models.Model):
     # Description or reason for why the state was deleted
     delete_description = models.TextField(null=True, blank=True)
 
-    # Foreign key to the User model, represents the user who created this state record
-    created_by = models.ForeignKey(User, related_name='state_created', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Automatically set when the state record is created
-    created_at = models.DateTimeField(auto_now_add=True)
 
-    # Foreign key to the User model, represents the user who last updated this state record
-    updated_by = models.ForeignKey(User, related_name='state_updated', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Automatically set when the state record is updated
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = 'State'

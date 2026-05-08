@@ -50,7 +50,13 @@ def company_grant_owner(request: HttpRequest, slug: str) -> HttpResponse:
     target, _created = CompanyMembership.objects.get_or_create(
         company=company,
         user=user,
-        defaults={"is_owner": False, "is_admin": False},
+        defaults={
+            "is_owner": False,
+            "is_admin": False,
+            "is_store_manager": False,
+            "is_pos_cashier": False,
+            "is_office_user": False,
+        },
     )
     if target.is_owner:
         messages.info(request, "That member already has the ownership tag.")

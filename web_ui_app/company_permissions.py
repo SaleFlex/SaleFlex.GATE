@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractBaseUser
 
 from core.models import (
     Company,
@@ -14,7 +14,7 @@ from core.models import (
 )
 
 
-def membership_for(user: User, company: Company) -> CompanyMembership | None:
+def membership_for(user: AbstractBaseUser, company: Company) -> CompanyMembership | None:
     if not user.is_authenticated:
         return None
     return (
@@ -77,7 +77,7 @@ def try_complete_company_deletion(company: Company) -> bool:
     return False
 
 
-def record_deletion_approval(req: CompanyDeletionRequest, user: User) -> None:
+def record_deletion_approval(req: CompanyDeletionRequest, user: AbstractBaseUser) -> None:
     CompanyDeletionApproval.objects.get_or_create(
         deletion_request=req,
         owner_user=user,
