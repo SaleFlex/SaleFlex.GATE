@@ -4,16 +4,19 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}SaleFlex.GATE{% endblock %}</title>
-    <link rel="icon" href="{% static 'web_ui_app/icons/favicon.svg' %}" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="{% static 'web_ui_app/icons/favicon.svg' %}">
+    <title>{% block title %}{{ site_title }}{% endblock %}</title>
+    <link rel="icon" href="{% static 'img/favicon.ico' %}" sizes="any">
+    <link rel="apple-touch-icon" href="{% static 'img/apple-touch-icon.png' %}">
     <link rel="stylesheet" href="{% static 'web_ui_app/css/base.css' %}">
     {% block extra_head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
     <div class="shell {% block shell_class %}{% endblock %}">
         <header class="site">
-            <a class="brand" href="{% url 'landing' %}">SaleFlex.GATE</a>
+            <a class="brand" href="{% url 'landing' %}">
+                <img class="brand__logo" src="{% static 'img/logo-default-slim.png' %}" alt="" width="36" height="36" decoding="async">
+                <span class="brand__name">{{ site_title }}</span>
+            </a>
             <nav class="nav-actions">
                 {% if user.is_authenticated %}
                     <div class="user-menu" data-user-menu>

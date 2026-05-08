@@ -92,14 +92,18 @@ source .venv/bin/activate
 
 pip install -r requirements.txt
 python manage.py migrate
+python manage.py collectstatic --noinput
 python manage.py createsuperuser
 python manage.py runserver
 ```
 
 Open the portal: http://127.0.0.1:8000/
+
 Open Django Admin: http://127.0.0.1:8000/admin/
 
-> **Requirements:** Python 3.12+ - Django 6.x - SQLite (dev) or PostgreSQL (production)
+**Static files:** Defaults in `gate_project/settings.py`: **`STATIC_URL`** `/files/`, **`STATIC_ROOT`** `files/` (output of **`collectstatic`**, gitignored), and **`STATICFILES_DIRS`** including **`files_local/`** for committed branding (for example **`files_local/img/`** favicons and logos). The `collectstatic` step merges Django admin assets, **`web_ui_app/static/`**, and **`files_local/`** into **`STATIC_ROOT`**. During development Django’s static finders still serve these sources; in production your web server should serve **`STATIC_URL`** from the collected directory. More detail: [README_DEV.md](README_DEV.md), [docs/08-public-web-portal-landing-and-accounts.md](docs/08-public-web-portal-landing-and-accounts.md).
+
+> **Requirements:** Python 3.12+ · Django 6.x · SQLite (dev) or PostgreSQL (production)
 
 ---
 

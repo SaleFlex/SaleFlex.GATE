@@ -14,6 +14,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+from django.conf import settings
+
+
+def site_title(request):
+    return {'site_title': getattr(settings, 'WEB_SITE_TITLE', 'SaleFlex.GATE')}
+
+
 def user_profile(request):
     if not request.user.is_authenticated:
         return {}

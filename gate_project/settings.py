@@ -25,7 +25,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -84,6 +84,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'web_ui_app.context_processors.site_title',
                 'web_ui_app.context_processors.user_profile',
             ],
         },
@@ -143,8 +144,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = "files"
+STATIC_URL = "/files/"
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'files_local'),
+)
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -160,3 +164,6 @@ AUTH_USER_MODEL = 'core.Cashier'
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/'
+
+# Browser UI branding: default document title suffix and header brand label (templates use `site_title`).
+WEB_SITE_TITLE = 'SaleFlex.GATE'

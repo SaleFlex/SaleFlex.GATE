@@ -171,3 +171,8 @@ cython_debug/
 .idea/modules.xml
 .idea/SaleFlex.GATE.iml
 .idea/vcs.xml
+
+# static files — exclude collectstatic output but keep compressor offline cache
+files/
+!files/CACHE/
+!files/CACHE/**
