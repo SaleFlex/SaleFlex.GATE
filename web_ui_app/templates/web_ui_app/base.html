@@ -1,5 +1,5 @@
-{% load static %}
 <!DOCTYPE html>
+{% load static compress %}
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -7,7 +7,9 @@
     <title>{% block title %}{{ site_title }}{% endblock %}</title>
     <link rel="icon" href="{% static 'img/favicon.ico' %}" sizes="any">
     <link rel="apple-touch-icon" href="{% static 'img/apple-touch-icon.png' %}">
+    {% compress css %}
     <link rel="stylesheet" href="{% static 'web_ui_app/css/base.css' %}">
+    {% endcompress %}
     {% block extra_head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
@@ -83,8 +85,8 @@
             Central hub for SaleFlex — POS, kitchen, mobile, and integrations. See repository README for architecture.
         </footer>
     </div>
-    {% if user.is_authenticated %}
+    {% compress js %}
     <script src="{% static 'web_ui_app/js/user-menu.js' %}" defer></script>
-    {% endif %}
+    {% endcompress %}
 </body>
 </html>

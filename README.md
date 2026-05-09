@@ -93,6 +93,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 python manage.py migrate
 python manage.py collectstatic --noinput
+python manage.py compress
 python manage.py createsuperuser
 python manage.py runserver
 ```
@@ -101,7 +102,7 @@ Open the portal: http://127.0.0.1:8000/
 
 Open Django Admin: http://127.0.0.1:8000/admin/
 
-**Static files:** Defaults in `gate_project/settings.py`: **`STATIC_URL`** `/files/`, **`STATIC_ROOT`** `files/` (output of **`collectstatic`**, gitignored), and **`STATICFILES_DIRS`** including **`files_local/`** for committed branding (for example **`files_local/img/`** favicons and logos). The `collectstatic` step merges Django admin assets, **`web_ui_app/static/`**, and **`files_local/`** into **`STATIC_ROOT`**. During development Django’s static finders still serve these sources; in production your web server should serve **`STATIC_URL`** from the collected directory. More detail: [README_DEV.md](README_DEV.md), [docs/08-public-web-portal-landing-and-accounts.md](docs/08-public-web-portal-landing-and-accounts.md).
+**Static files:** Defaults in `gate_project/settings.py`: **`STATIC_URL`** `/files/`, **`STATIC_ROOT`** `files/` (output of **`collectstatic`**; the repo **`.gitignore`** ignores almost all of `files/` but **keeps `files/CACHE/`** so **django-compressor** offline bundles can be versioned), and **`STATICFILES_DIRS`** including **`files_local/`** for committed branding (for example **`files_local/img/`** favicons and logos). After **`collectstatic`**, run **`python manage.py compress`** so portal CSS/JS wrapped in **`{% compress %}`** in templates resolve with **`COMPRESS_OFFLINE`**. To wipe and rebuild collected static, use **`python manage.py collectstatic --noinput --clear`** then **`python manage.py compress`** (add **`--force`** on compress if the manifest must be regenerated).
 
 > **Requirements:** Python 3.12+ · Django 6.x · SQLite (dev) or PostgreSQL (production)
 

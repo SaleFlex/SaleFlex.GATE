@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+from .abstract_cashier import AbstractCashier
 from .base import BaseModel
 from .cashier import Cashier
 from .cashier_store_assignment import CashierStoreAssignment
@@ -55,6 +56,7 @@ from .warehouse_product import WarehouseProduct
 from .warehouse_transaction import WarehouseTransaction
 
 __all__ = [
+    "AbstractCashier",
     "BaseModel",
     "Cashier",
     "CashierStoreAssignment",

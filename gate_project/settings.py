@@ -59,6 +59,8 @@ INSTALLED_APPS = [
     'core',
     'pos_api_app',
     'web_ui_app',
+
+    'compressor',
 ]
 
 MIDDLEWARE = [
@@ -149,6 +151,29 @@ STATIC_URL = "/files/"
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'files_local'),
 )
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'compressor.finders.CompressorFinder',
+)
+
+# django-compressor — offline manifest + bundles under STATIC_ROOT/CACHE/ (see README_DEV).
+# COMPRESS_OFFLINE=True: run 'python manage.py compress' before deploy.
+# Generated files go into COMPRESS_ROOT (STATIC_ROOT by default).
+# No disk writes at runtime — required for read-only filesystem.
+COMPRESS_ENABLED = True
+COMPRESS_OFFLINE = True
+COMPRESS_ROOT = STATIC_ROOT
+COMPRESS_URL = STATIC_URL
+COMPRESS_OUTPUT_DIR = 'CACHE'
+COMPRESS_CSS_FILTERS = [
+    'compressor.filters.css_default.CssAbsoluteFilter',
+    'compressor.filters.cssmin.rCSSMinFilter',
+]
+COMPRESS_JS_FILTERS = ['compressor.filters.jsmin.rJSMinFilter']
+COMPRESS_OFFLINE_CONTEXT = {
+    'STATIC_URL': STATIC_URL,
+}
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
