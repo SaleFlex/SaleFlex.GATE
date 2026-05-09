@@ -4,19 +4,24 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0f766e">
     <title>{% block title %}{{ site_title }}{% endblock %}</title>
-    <link rel="icon" href="{% static 'img/favicon.ico' %}" sizes="any">
-    <link rel="apple-touch-icon" href="{% static 'img/apple-touch-icon.png' %}">
+    <link rel="icon" href="{% static 'gate/img/favicon.ico' %}" sizes="any">
+    <link rel="apple-touch-icon" href="{% static 'gate/img/apple-touch-icon.png' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
     {% compress css %}
-    <link rel="stylesheet" href="{% static 'web_ui_app/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'gate/css/base.css' %}">
     {% endcompress %}
     {% block extra_head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
-    <div class="shell {% block shell_class %}{% endblock %}">
-        <header class="site">
+    <header class="site site-header">
+        <div class="site-header__inner">
             <a class="brand" href="{% url 'landing' %}">
-                <img class="brand__logo" src="{% static 'img/logo-default-slim.png' %}" alt="" width="36" height="36" decoding="async">
+                <img class="brand__logo" src="{% static 'gate/img/logo-default-slim.png' %}" alt="" width="38" height="38" decoding="async">
                 <span class="brand__name">{{ site_title }}</span>
             </a>
             <nav class="nav-actions">
@@ -34,7 +39,7 @@
                                 {% if cashier.avatar %}
                                     <img class="user-menu__avatar" src="{{ cashier.avatar.url }}" alt="" width="36" height="36">
                                 {% else %}
-                                    <img class="user-menu__avatar" src="{% static 'web_ui_app/icons/avatar-default.svg' %}" alt="" width="36" height="36">
+                                    <img class="user-menu__avatar" src="{% static 'gate/img/avatar-default.svg' %}" alt="" width="36" height="36">
                                 {% endif %}
                             </span>
                             <span class="user-menu__chev" aria-hidden="true">▾</span>
@@ -67,8 +72,10 @@
                     <a class="btn btn-primary" href="{% url 'register' %}">Create account</a>
                 {% endif %}
             </nav>
-        </header>
+        </div>
+    </header>
 
+    <div class="shell {% block shell_class %}{% endblock %}">
         {% if messages %}
             <ul class="messages">
                 {% for message in messages %}
@@ -81,12 +88,12 @@
             {% block content %}{% endblock %}
         </main>
 
-        <footer class="site">
+        <footer class="site site-footer">
             Central hub for SaleFlex — POS, kitchen, mobile, and integrations. See repository README for architecture.
         </footer>
     </div>
     {% compress js %}
-    <script src="{% static 'web_ui_app/js/user-menu.js' %}" defer></script>
+    <script src="{% static 'gate/js/user-menu.js' %}" defer></script>
     {% endcompress %}
 </body>
 </html>
