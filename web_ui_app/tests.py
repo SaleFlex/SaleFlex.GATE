@@ -15,15 +15,20 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from .models import Company, CompanyJoinRequest, CompanyMembership
 
 User = get_user_model()
 
+# Offline compressor manifest is optional during tests; avoids requiring `compress` after every template change.
+@override_settings(COMPRESS_OFFLINE=False)
+class WebUiAppTestCase(TestCase):
+    """Base for tests that render templates using {% compress %}."""
 
-class PortalPasswordChangeTests(TestCase):
+
+class PortalPasswordChangeTests(WebUiAppTestCase):
     def setUp(self):
         self.user = User.objects.create_user("alice", password="oldpass12345")
 
@@ -50,7 +55,7 @@ class PortalPasswordChangeTests(TestCase):
         self.assertEqual(dash.status_code, 200)
 
 
-class PortalCompanyTests(TestCase):
+class PortalCompanyTests(WebUiAppTestCase):
     def setUp(self):
         self.owner = User.objects.create_user("owner1", password="pass-owner-1")
         self.other = User.objects.create_user("member1", password="pass-member-1")
@@ -189,3 +194,26 @@ class PortalCompanyTests(TestCase):
         self.client.login(username="member1", password="pass-member-1")
         r = self.client.get(reverse("company_detail", args=[company.slug]))
         self.assertEqual(r.status_code, 404)
+
+
+class PortalThemePickerTests(WebUiAppTestCase):
+    """Gate web UI exposes Light / Dark / System theme (client-side, localStorage)."""
+
+    def test_landing_includes_theme_picker_and_scripts(self):
+        r = self.client.get(reverse("landing"))
+        self.assertEqual(r.status_code, 200)
+        content = r.content.decode()
+        self.assertIn("data-theme-picker", content)
+        self.assertIn("saleflex-gate-theme", content)
+        self.assertRegex(
+            content,
+            r"gate/js/theme\.js|/files/CACHE/js/[^\"']+\.js",
+            msg="Expect theme script via static path or offline compress bundle",
+        )
+
+    def test_dashboard_includes_theme_picker(self):
+        user = get_user_model().objects.create_user("themer", password="pass-theme-1")
+        self.client.login(username="themer", password="pass-theme-1")
+        r = self.client.get(reverse("dashboard"))
+        self.assertEqual(r.status_code, 200)
+        self.assertIn(b"data-theme-picker", r.content)

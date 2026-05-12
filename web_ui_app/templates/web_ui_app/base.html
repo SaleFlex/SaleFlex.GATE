@@ -5,6 +5,21 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#0f766e">
+    <script>
+    (function () {
+        try {
+            var k = "saleflex-gate-theme";
+            var pref = localStorage.getItem(k) || "system";
+            if (pref !== "light" && pref !== "dark" && pref !== "system") pref = "system";
+            var dark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+            var eff = pref === "system" ? (dark ? "dark" : "light") : pref;
+            document.documentElement.setAttribute("data-theme", eff);
+            document.documentElement.setAttribute("data-theme-pref", pref);
+            var meta = document.querySelector('meta[name="theme-color"]');
+            if (meta) meta.setAttribute("content", eff === "dark" ? "#0f172a" : "#0f766e");
+        } catch (e) {}
+    })();
+    </script>
     <title>{% block title %}{{ site_title }}{% endblock %}</title>
     <link rel="icon" href="{% static 'gate/img/favicon.ico' %}" sizes="any">
     <link rel="apple-touch-icon" href="{% static 'gate/img/apple-touch-icon.png' %}">
@@ -25,6 +40,26 @@
                 <span class="brand__name">{{ site_title }}</span>
             </a>
             <nav class="nav-actions">
+                {% if not user.is_authenticated %}
+                <div class="theme-picker" data-theme-picker>
+                    <button
+                        type="button"
+                        class="theme-picker__trigger"
+                        aria-expanded="false"
+                        aria-haspopup="listbox"
+                        aria-controls="theme-picker-panel-guest"
+                        title="Theme"
+                    >
+                        <span class="theme-picker__text">Theme</span>
+                        <span class="theme-picker__chev" aria-hidden="true">▾</span>
+                    </button>
+                    <div class="theme-picker__panel" id="theme-picker-panel-guest" role="listbox" aria-label="Color theme" hidden>
+                        <button type="button" class="theme-picker__option" role="option" data-theme-value="light">Light</button>
+                        <button type="button" class="theme-picker__option" role="option" data-theme-value="dark">Dark</button>
+                        <button type="button" class="theme-picker__option" role="option" data-theme-value="system">System</button>
+                    </div>
+                </div>
+                {% endif %}
                 {% if user.is_authenticated %}
                     <div class="user-menu" data-user-menu>
                         <button
@@ -57,13 +92,31 @@
                                     Settings
                                     <span class="user-menu__chev-sub" aria-hidden="true">▾</span>
                                 </button>
-                                <div class="user-menu__sub" id="user-menu-settings-sub" role="group" hidden>
-                                    <a class="user-menu__item user-menu__item--nested" role="menuitem" href="{% url 'password_change' %}">Change password</a>
+                                <div class="user-menu__sub user-menu__sub--settings" id="user-menu-settings-sub" role="group" aria-label="Settings" hidden>
+                                    <a class="user-menu__item user-menu__item--settings-branch" role="menuitem" href="{% url 'password_change' %}">Change password</a>
+                                    <div class="user-menu__sub-wrap user-menu__sub-wrap--nested">
+                                        <button
+                                            type="button"
+                                            class="user-menu__sub-toggle user-menu__sub-toggle--nested"
+                                            aria-expanded="false"
+                                            aria-controls="user-menu-theme-sub"
+                                        >
+                                            Theme
+                                            <span class="user-menu__chev-sub" aria-hidden="true">▾</span>
+                                        </button>
+                                        <div class="user-menu__sub user-menu__sub--nested" id="user-menu-theme-sub" role="group" aria-label="Theme" hidden>
+                                            <div data-theme-picker>
+                                                <button type="button" class="theme-picker__option theme-picker__option--menu" data-theme-value="light">Light</button>
+                                                <button type="button" class="theme-picker__option theme-picker__option--menu" data-theme-value="dark">Dark</button>
+                                                <button type="button" class="theme-picker__option theme-picker__option--menu" data-theme-value="system">System</button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <form action="{% url 'logout' %}" method="post" class="user-menu__logout">
                                 {% csrf_token %}
-                                <button type="submit" class="user-menu__item user-menu__item--button" role="menuitem">Log out</button>
+                                <button type="submit" class="user-menu__item user-menu__item--button" role="menuitem">Logout</button>
                             </form>
                         </div>
                     </div>
@@ -93,6 +146,7 @@
         </footer>
     </div>
     {% compress js %}
+    <script src="{% static 'gate/js/theme.js' %}" defer></script>
     <script src="{% static 'gate/js/user-menu.js' %}" defer></script>
     {% endcompress %}
 </body>
