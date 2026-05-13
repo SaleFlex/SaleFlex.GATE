@@ -417,6 +417,100 @@ main .card-narrow {
     margin-right: 0;
 }
 
+.slug-country {
+    font-size: 0.95rem;
+}
+
+.card.card--nested {
+    margin-top: 1rem;
+    margin-bottom: 1.25rem;
+    padding: 1rem 1.25rem;
+    box-shadow: none;
+    border-style: dashed;
+    background: var(--surface-elevated, var(--surface));
+}
+
+.wizard-steps {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+}
+
+.wizard-step {
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+}
+
+.wizard-step--active {
+    color: var(--text);
+    border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.wizard-step--muted {
+    opacity: 0.55;
+}
+
+.wizard-step__suffix {
+    display: inline-block;
+    margin-left: 0.35rem;
+    font-weight: 600;
+}
+
+.wizard-step-divider {
+    flex: 0 0 1.75rem;
+    height: 1px;
+    background: var(--border);
+}
+
+.wizard-country-template__head {
+    margin: 0 0 0.5rem;
+}
+
+.wizard-country-template__list {
+    margin: 0;
+    padding-left: 1.1rem;
+    font-size: 0.9rem;
+}
+
+.wizard-country-template .muted {
+    color: var(--muted);
+}
+
+.wizard-vat-strip {
+    margin-top: 0.75rem;
+    padding-top: 0.65rem;
+    border-top: 1px dashed var(--border);
+    font-size: 0.9rem;
+}
+
+.wizard-vat-strip__rates {
+    margin: 0.35rem 0 0;
+    padding-left: 1.1rem;
+}
+
+.wizard-admin-hint {
+    color: color-mix(in srgb, var(--accent-strong, var(--accent)) 85%, var(--text));
+}
+
+.form-row.wizard-hidden-step .helptext,
+.form-row.wizard-hidden-step label {
+    display: none;
+}
+
+.form-row.wizard-hidden-step {
+    margin-bottom: 0;
+}
+
+a.link-inline {
+    color: var(--accent);
+    text-underline-offset: 0.18em;
+}
+
 .auth-footer {
     margin-top: 1.25rem;
     font-size: 0.9rem;

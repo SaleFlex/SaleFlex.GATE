@@ -14,14 +14,19 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+from __future__ import annotations
+
+from typing import Iterable
+
 from django import forms
 from django.contrib.auth.forms import (
     AuthenticationForm,
     PasswordChangeForm,
     UserCreationForm,
 )
+from django.db.models import Q
 
-from core.models import Cashier, Company
+from core.models import Cashier, Company, Country, CountryTemplate
 from .widgets import (
     AtomicEmailInput,
     AtomicFileInput,
@@ -118,6 +123,100 @@ COMPANY_REGISTRATION_OPTIONAL_KEYS = (
     "registered_office",
 )
 
+PORTAL_SESSION_COUNTRY_PK = "portal_company_create_country_pk"
+WIZARD_STEP_COUNTRY = "country"
+WIZARD_STEP_DETAILS = "details"
+
+DEFAULT_REGISTRATION_DEFS: tuple[dict, ...] = (
+    {
+        "key": "companies_house_number",
+        "label": "Companies House number (CRN)",
+        "help_text": "Optional. Company registration number from Companies House.",
+        "widget": "text",
+        "textarea_rows": 3,
+    },
+    {
+        "key": "vat_number",
+        "label": "VAT number",
+        "help_text": "Optional. VAT registration number.",
+        "widget": "text",
+        "textarea_rows": 3,
+    },
+    {
+        "key": "registered_office",
+        "label": "Registered office address",
+        "help_text": "Optional. Registered office or principal trading address.",
+        "widget": "textarea",
+        "textarea_rows": 3,
+    },
+)
+
+
+def portal_active_countries():
+    """Countries eligible for onboarding (respects soft-delete when used)."""
+
+    return (
+        Country.objects.filter(Q(is_deleted=False) | Q(is_deleted__isnull=True)).order_by("name")
+    )
+
+
+def active_template_for_country_id(country_id: int | None) -> CountryTemplate | None:
+    if not country_id:
+        return None
+    return CountryTemplate.objects.filter(country_id=country_id, is_active=True).first()
+
+
+def active_template_for_country(country: Country | None) -> CountryTemplate | None:
+    if not country or not country.pk:
+        return None
+    return active_template_for_country_id(int(country.pk))
+
+
+def merged_registration_defs(template: CountryTemplate | None) -> list[dict]:
+    rows: list[dict] = [dict(row) for row in DEFAULT_REGISTRATION_DEFS]
+    if not template or not template.registration_field_defs:
+        return rows
+    if not isinstance(template.registration_field_defs, list):
+        return rows
+    overrides = {item["key"]: item for item in template.registration_field_defs if isinstance(item, dict)}
+    for i, row in enumerate(rows):
+        key = row["key"]
+        override = overrides.get(key)
+        if not override:
+            continue
+        if override.get("label"):
+            rows[i]["label"] = override["label"]
+        if "help_text" in override:
+            rows[i]["help_text"] = override["help_text"]
+        elif override.get("help") is not None:
+            rows[i]["help_text"] = override["help"]
+        if override.get("widget") in {"text", "textarea"}:
+            rows[i]["widget"] = override["widget"]
+        if override.get("textarea_rows"):
+            rows[i]["textarea_rows"] = int(override["textarea_rows"])
+    return rows
+
+
+def apply_optional_registration_defs(form: forms.BaseForm, defs: Iterable[dict]) -> None:
+    """Apply label/help/widget hints for COMPANY_REGISTRATION_OPTIONAL_KEYS fields."""
+
+    for row in defs:
+        key = row.get("key")
+        if not key or key not in form.fields:
+            continue
+        field = form.fields[key]
+        label = row.get("label")
+        if label:
+            field.label = label
+        if "help_text" in row and row["help_text"] is not None:
+            field.help_text = row["help_text"]
+        widget = row.get("widget") or "text"
+        rows = int(row.get("textarea_rows") or 3)
+        if widget == "textarea":
+            field.widget = AtomicTextarea(attrs={**field.widget.attrs, "rows": rows})
+        else:
+            field.widget = AtomicTextInput(attrs={**field.widget.attrs, "autocomplete": "off"})
+
 
 def registration_kwargs_from_cleaned(cleaned_data: dict) -> dict[str, str]:
     """Map optional registration fields from a create form's cleaned_data to model kwargs."""
@@ -133,7 +232,28 @@ def registration_kwargs_from_cleaned(cleaned_data: dict) -> dict[str, str]:
     return out
 
 
+class CompanyWizardCountryStepForm(forms.Form):
+    wizard_step = forms.CharField(initial=WIZARD_STEP_COUNTRY, widget=forms.HiddenInput)
+    country = forms.ModelChoiceField(
+        queryset=Country.objects.none(),
+        label="Country",
+        empty_label=None,
+    )
+
+    def __init__(
+        self,
+        *args,
+        countries_queryset=None,
+        **kwargs,
+    ):
+        super().__init__(*args, **kwargs)
+        qs = portal_active_countries() if countries_queryset is None else countries_queryset
+        self.fields["country"].queryset = qs
+
+
 class CompanyCreateForm(forms.Form):
+    wizard_step = forms.CharField(required=False, initial=WIZARD_STEP_DETAILS, widget=forms.HiddenInput)
+
     name = forms.CharField(
         max_length=200,
         label="Company name",
@@ -160,6 +280,13 @@ class CompanyCreateForm(forms.Form):
         widget=AtomicTextarea(attrs={"rows": 3}),
     )
 
+    def __init__(self, *args, is_wizard: bool = False, registration_defs: list[dict] | None = None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not is_wizard:
+            self.fields.pop("wizard_step", None)
+        defs = registration_defs if registration_defs is not None else merged_registration_defs(None)
+        apply_optional_registration_defs(self, defs)
+
     def clean_name(self) -> str:
         n = (self.cleaned_data.get("name") or "").strip()
         if not n:
@@ -179,14 +306,19 @@ class CompanyRegistrationForm(forms.ModelForm):
         self.fields["name"].widget = AtomicTextInput(
             attrs={**self.fields["name"].widget.attrs, "autocomplete": "organization"}
         )
-        self.fields["registered_office"].widget = AtomicTextarea(
-            attrs={**self.fields["registered_office"].widget.attrs, "rows": 4}
-        )
+        tpl = active_template_for_country(getattr(self.instance, "country", None))
+        defs = merged_registration_defs(tpl)
+        apply_optional_registration_defs(self, defs)
+        ro_widget = self.fields["registered_office"].widget
+        if isinstance(ro_widget, AtomicTextarea):
+            prev = int(ro_widget.attrs.get("rows") or 4)
+            ro_widget.attrs["rows"] = max(prev, 4)
         for key in COMPANY_REGISTRATION_OPTIONAL_KEYS:
             if key == "registered_office":
                 continue
-            f = self.fields[key]
-            f.widget = AtomicTextInput(attrs={**f.widget.attrs, "autocomplete": "off"})
+            self.fields[key].widget = AtomicTextInput(
+                attrs={**self.fields[key].widget.attrs, "autocomplete": "off"}
+            )
 
     def clean_name(self) -> str:
         n = (self.cleaned_data.get("name") or "").strip()

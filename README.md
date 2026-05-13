@@ -92,11 +92,14 @@ source .venv/bin/activate
 
 pip install -r requirements.txt
 python manage.py migrate
+python manage.py seed_reference_data
 python manage.py collectstatic --noinput
 python manage.py compress
 python manage.py createsuperuser
 python manage.py runserver
 ```
+
+**Reference data:** After `migrate`, `python manage.py seed_reference_data` loads baseline rows such as **countries** (ISO 3166 via [pycountry](https://pypi.org/project/pycountry/), currency hints via [Babel](https://pypi.org/project/babel/)). Re-run safely to refresh from the same rules. Options: `--only countries`, `--dry-run` (no DB writes).
 
 Open the portal: http://127.0.0.1:8000/
 

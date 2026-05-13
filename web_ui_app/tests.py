@@ -18,6 +18,8 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
+from core.models import Country, CountryTemplate
+
 from .models import Company, CompanyJoinRequest, CompanyMembership
 
 User = get_user_model()
@@ -59,38 +61,83 @@ class PortalCompanyTests(WebUiAppTestCase):
     def setUp(self):
         self.owner = User.objects.create_user("owner1", password="pass-owner-1")
         self.other = User.objects.create_user("member1", password="pass-member-1")
+        self.country = Country.objects.create(
+            name="United Kingdom",
+            iso_alpha2="GB",
+            currency_code="GBP",
+            is_deleted=False,
+        )
+
+    def _complete_company_create_wizard(self, name: str, **optional_fields):
+        url = reverse("company_create")
+        r_country = self.client.post(
+            url,
+            {"wizard_step": "country", "country": str(self.country.pk)},
+        )
+        self.assertRedirects(r_country, url, fetch_redirect_response=False)
+        payload = {"wizard_step": "details", "name": name, **optional_fields}
+        return self.client.post(url, payload)
 
     def test_create_company_makes_owner_and_admin(self):
         self.client.login(username="owner1", password="pass-owner-1")
-        r = self.client.post(
-            reverse("company_create"),
-            {"name": "Acme Retail"},
-            follow=False,
-        )
+        r = self._complete_company_create_wizard("Acme Retail")
         self.assertEqual(r.status_code, 302)
         c = Company.objects.get(name="Acme Retail")
+        self.assertEqual(c.country_id, self.country.pk)
         m = CompanyMembership.objects.get(company=c, user=self.owner)
         self.assertTrue(m.is_owner)
         self.assertTrue(m.is_admin)
 
     def test_create_company_saves_optional_registration_fields(self):
         self.client.login(username="owner1", password="pass-owner-1")
-        r = self.client.post(
-            reverse("company_create"),
-            {
-                "name": "Euro UK Ltd",
-                "companies_house_number": "",
-                "vat_number": "GB123456789",
-                "registered_office": "1 Test St, London",
-            },
+        r = self._complete_company_create_wizard(
+            "Euro UK Ltd",
+            companies_house_number="",
+            vat_number="GB123456789",
+            registered_office="1 Test St, London",
         )
         self.assertEqual(r.status_code, 302)
         c = Company.objects.get(name="Euro UK Ltd")
         self.assertEqual(c.vat_number, "GB123456789")
         self.assertEqual(c.registered_office, "1 Test St, London")
 
+    def test_wizard_requires_country_selection_first(self):
+        self.client.login(username="owner1", password="pass-owner-1")
+        url = reverse("company_create")
+        r = self.client.post(url, {"wizard_step": "details", "name": "Nobody Co"})
+        self.assertRedirects(r, url)
+        self.assertFalse(Company.objects.filter(name="Nobody Co").exists())
+
+    def test_country_template_surfaces_intro_and_tax_hints(self):
+        CountryTemplate.objects.create(
+            country=self.country,
+            wizard_intro="__WIZ_TMPL_MARKER__",
+            vat_rates=[{"label": "Demo tax", "rate_percent": "20"}],
+        )
+        self.client.login(username="owner1", password="pass-owner-1")
+        url = reverse("company_create")
+        self.client.post(url, {"wizard_step": "country", "country": str(self.country.pk)})
+        r = self.client.get(url)
+        self.assertEqual(r.status_code, 200)
+        self.assertContains(r, "__WIZ_TMPL_MARKER__")
+        self.assertContains(r, "Demo tax")
+        self.assertContains(r, "20%")
+
+    def test_inactive_country_template_is_ignored_for_ui(self):
+        CountryTemplate.objects.create(
+            country=self.country,
+            is_active=False,
+            wizard_intro="__WIZ_DISABLED__",
+            vat_rates=[{"label": "Hidden", "rate_percent": "99"}],
+        )
+        self.client.login(username="owner1", password="pass-owner-1")
+        url = reverse("company_create")
+        self.client.post(url, {"wizard_step": "country", "country": str(self.country.pk)})
+        r = self.client.get(url)
+        self.assertNotContains(r, "__WIZ_DISABLED__")
+
     def test_owner_updates_registration_on_company_detail(self):
-        company = Company.objects.create(name="Co", slug="co-reg-test")
+        company = Company.objects.create(name="Co", slug="co-reg-test", country=self.country)
         CompanyMembership.objects.create(
             company=company,
             user=self.owner,

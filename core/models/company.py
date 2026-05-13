@@ -24,6 +24,15 @@ class Company(BaseModel):
 
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=96, unique=True, db_index=True)
+
+    country = models.ForeignKey(
+        "Country",
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+        related_name="companies",
+        help_text="Country chosen at onboarding; drives optional registration copy and downstream defaults.",
+    )
     # Optional registration details (aligned with typical UK limited-company data; only name is required)
     companies_house_number = models.CharField(
         max_length=32,

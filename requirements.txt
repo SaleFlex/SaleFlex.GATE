@@ -2,5 +2,5 @@ django==6.0.5
 djangorestframework==3.17.1
 pillow==12.2.0
 django-compressor==4.6.0
-rcssmin==1.1.2
-rjsmin==1.2.4
+pycountry==26.2.16
+babel==2.18.0

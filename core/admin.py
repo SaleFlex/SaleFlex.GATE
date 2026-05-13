@@ -25,6 +25,8 @@ from .models import (
     CompanyDeletionRequest,
     CompanyJoinRequest,
     CompanyMembership,
+    Country,
+    CountryTemplate,
 )
 
 
@@ -93,6 +95,21 @@ class CashierStoreAssignmentAdmin(admin.ModelAdmin):
     filter_horizontal = ("pos_devices",)
 
 
+@admin.register(Country)
+class CountryAdmin(admin.ModelAdmin):
+    list_display = ("name", "iso_alpha2", "currency_code", "is_deleted", "updated_at")
+    list_filter = ("is_deleted",)
+    search_fields = ("name", "iso_alpha2", "iso_alpha3", "currency_code")
+
+
+@admin.register(CountryTemplate)
+class CountryTemplateAdmin(admin.ModelAdmin):
+    list_display = ("country", "is_active", "default_currency_code", "default_language_tag", "updated_at")
+    list_filter = ("is_active",)
+    search_fields = ("country__name", "country__iso_alpha2", "default_currency_code")
+    raw_id_fields = ("country",)
+
+
 # ---------------------------------------------------------------------------
 # Company
 # ---------------------------------------------------------------------------
@@ -100,12 +117,13 @@ class CashierStoreAssignmentAdmin(admin.ModelAdmin):
 
 @admin.register(Company)
 class CompanyAdmin(admin.ModelAdmin):
-    list_display = ("name", "slug", "created_at")
+    list_display = ("name", "slug", "country", "created_at")
+    list_select_related = ("country",)
     list_display_links = ("name",)
-    search_fields = ("name", "slug", "companies_house_number", "vat_number")
+    search_fields = ("name", "slug", "companies_house_number", "vat_number", "country__name", "country__iso_alpha2")
     prepopulated_fields = {"slug": ("name",)}
     fieldsets = (
-        (None, {"fields": ("name", "slug")}),
+        (None, {"fields": ("name", "slug", "country")}),
         (
             "Registration",
             {

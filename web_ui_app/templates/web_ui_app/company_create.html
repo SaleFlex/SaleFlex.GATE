@@ -3,22 +3,109 @@
 {% block title %}New company — {{ site_title }}{% endblock %}
 
 {% block portal_content %}
-<div class="card card-narrow">
-    <h1>Create a company</h1>
-    <p class="lead lead-tight">You become an <strong>owner</strong> and <strong>administrator</strong> automatically. You can invite others with the company slug after it is created. Only the <strong>company name</strong> is required; optional fields cover typical <strong>UK limited company</strong> registration details (Companies House number, VAT number, registered office).</p>
-    <form method="post" action="">
-        {% csrf_token %}
-        {% for field in form %}
-            <div class="form-row">
-                <label for="{{ field.id_for_label }}">{{ field.label }}{{ form.label_suffix }}</label>
-                {{ field.as_widget }}
-                {% if field.help_text %}<div class="helptext">{{ field.help_text|safe }}</div>{% endif %}
-                {{ field.errors }}
-            </div>
-        {% endfor %}
-        <button type="submit" class="btn btn-primary btn-block">Create company</button>
-    </form>
+<div class="card card-narrow card-wizard">
+    {% if wizard_phase == "country" %}
+        <div class="wizard-steps" aria-hidden="true">
+            <span class="wizard-step wizard-step--active">1<span class="wizard-step__suffix">Country</span></span>
+            <span class="wizard-step-divider"></span>
+            <span class="wizard-step wizard-step--muted">2<span class="wizard-step__suffix">Company</span></span>
+        </div>
+        <h1>New company · Country</h1>
+        {% if countries_qs_empty %}
+            <p class="lead lead-tight wizard-admin-hint">
+                Country records are missing. Create at least one <strong>Country</strong> row in Django Admin (and an optional <strong>Country template</strong> for VAT defaults and onboarding copy).
+            </p>
+        {% else %}
+            <p class="lead lead-tight">
+                Pick where this company operates. If a matching <strong>country template</strong> exists,
+                VAT defaults, currency hints, and registration field labels adapt on the next step.
+            </p>
+            <form method="post" action="">
+                {% csrf_token %}
+                {% for field in country_form %}
+                    <div class="form-row {% if field.name == 'wizard_step' %}wizard-hidden-step{% endif %}">
+                        {% if field.name != 'wizard_step' %}<label for="{{ field.id_for_label }}">{{ field.label }}{{ country_form.label_suffix }}</label>{% endif %}
+                        {{ field.as_widget }}
+                        {% if field.help_text %}<div class="helptext">{{ field.help_text|safe }}</div>{% endif %}
+                        {{ field.errors }}
+                    </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary btn-block">Continue</button>
+            </form>
+        {% endif %}
+    {% else %}
+        <div class="wizard-steps" aria-hidden="true">
+            <span class="wizard-step">1<span class="wizard-step__suffix">Country</span></span>
+            <span class="wizard-step-divider"></span>
+            <span class="wizard-step wizard-step--active">2<span class="wizard-step__suffix">Company</span></span>
+        </div>
+        <h1>Create a company</h1>
+        <p class="lead lead-tight">{{ intro_text|linebreaksbr }}</p>
+
+        {% if country_template %}
+        <div class="card card--nested wizard-country-template">
+            <p class="wizard-country-template__head"><strong>Country template:</strong> {{ selected_country }}</p>
+            <ul class="wizard-country-template__list">
+                {% if hints.currency_code %}
+                    <li><span class="muted">Primary currency hint</span> — {{ hints.currency_code }}</li>
+                {% endif %}
+                {% if hints.measurement_unit_system %}
+                    <li><span class="muted">Measurement</span> — {{ hints.measurement_unit_system }}</li>
+                {% endif %}
+                {% if hints.languages %}
+                    <li><span class="muted">Locales / languages</span> — {{ hints.languages|join:", " }}</li>
+                {% endif %}
+                {% if country_template.default_language_tag %}
+                    <li><span class="muted">Default locale</span> — {{ country_template.default_language_tag }}</li>
+                {% endif %}
+                {% if country_template.secondary_currency_codes %}
+                    <li><span class="muted">Other currencies</span> — {{ country_template.secondary_currency_codes|join:", " }}</li>
+                {% endif %}
+            </ul>
+            {% if hints.vat_rates_display %}
+                <div class="wizard-vat-strip">
+                    <strong title="Operational defaults — not fiscal advice">Tax / VAT defaults</strong>
+                    <ul class="wizard-vat-strip__rates">
+                        {% for row in hints.vat_rates_display %}
+                            <li>{% if row.label %}<span class="muted">{{ row.label }}</span>{% endif %}{% if row.rate_display %} — {{ row.rate_display }}{% endif %}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% if not country_template %}
+        <p class="muted small">
+            Operating country is <strong>{{ selected_country }}</strong>. No active <strong>country template</strong> is linked in admin;
+            registration fields below use generic labels.
+            <a href="?restart=1" class="link-inline">Choose a different country</a>
+        </p>
+        {% else %}
+            <p class="muted small">
+                Operating country is <strong>{{ selected_country }}</strong>.
+                <a href="?restart=1" class="link-inline">Change country</a>
+            </p>
+        {% endif %}
+
+        <form method="post" action="">
+            {% csrf_token %}
+            {% for field in wizard_form %}
+                <div class="form-row {% if field.name == 'wizard_step' %}wizard-hidden-step{% endif %}">
+                    {% if field.name != 'wizard_step' %}<label for="{{ field.id_for_label }}">{{ field.label }}{{ wizard_form.label_suffix }}</label>{% endif %}
+                    {{ field.as_widget }}
+                    {% if field.help_text %}<div class="helptext">{{ field.help_text|safe }}</div>{% endif %}
+                    {{ field.errors }}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary btn-block">Create company</button>
+        </form>
+    {% endif %}
     <div class="auth-actions">
+        {% if wizard_phase != "country" %}
+            <a href="{% url 'company_create' %}?restart=1">Back</a>
+            <span class="muted">·</span>
+        {% endif %}
         <a href="{% url 'company_list' %}">Back to companies</a>
     </div>
 </div>

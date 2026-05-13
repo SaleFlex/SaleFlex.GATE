@@ -77,5 +77,10 @@ class Country(BaseModel):
 
     # Automatically set when the country record is updated
 
+    def __str__(self) -> str:
+        return self.name or ""
+
     class Meta:
-        db_table = 'Country'
+        db_table = "Country"
+        verbose_name = "Country"
+        verbose_name_plural = "Countries"

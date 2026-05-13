@@ -7,6 +7,9 @@
     <h1>{{ company.name }}</h1>
     <p class="lead lead-tight">
         Slug: <code class="slug-code">{{ company.slug }}</code>
+        {% if company.country %}
+            <span class="muted slug-country">· {{ company.country.name }}</span>
+        {% endif %}
         <span class="tag-row tag-row--inline">
             {% if m_self.is_owner %}<span class="tag tag--owner">Owner</span>{% endif %}
             {% if m_self.is_admin %}<span class="tag tag--admin">Administrator</span>{% endif %}

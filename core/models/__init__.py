@@ -33,6 +33,7 @@ from .contact import Contact
 from .contact_authority import ContactAuthority
 from .contact_position import ContactPosition
 from .country import Country
+from .country_template import CountryTemplate
 from .customer import Customer
 from .customer_type import CustomerType
 from .merchant import Merchant
@@ -76,6 +77,7 @@ __all__ = [
     "ContactAuthority",
     "ContactPosition",
     "Country",
+    "CountryTemplate",
     "Customer",
     "CustomerType",
     "Merchant",
